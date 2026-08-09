@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Haruka - prompt analysis tool (Day 1 skeleton)
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Runtime: python3.12
+Resources:
+  HelloFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: src/
+        Handler: app.lambda_handler
+        Events:
+          HelloApi:
+            Type: HttpApi
+            Properties:
+              Path: /hello
+              Method: get
+Outputs:
+  ApiUrl:
+    Description: Where Haruka answers
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/hello"
