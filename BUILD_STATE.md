@@ -22,6 +22,15 @@ Date: 2026-08-09 · Day 1
 
 - Titan V2 is English-optimized per AWS → Day 4 gains a JA embed shootout: Titan vs Cohere on JA doctrine queries
 
-## NEXT
+## LESSONS (Day 1 scars, keep)
+- Tabs are fatal in YAML — `cat -et` makes them visible
+- The terminal runs text; files hold text — edits go through nano
+- Colon marries, comma separates
+- [brackets] in prompts = default; Enter accepts
+- Gates catch lies: `git remote -v` caught an unpushed repo
 
-- Block 3: hand-typed SAM template, first deploy
+## NEXT — Day 2
+- Warm-up (slipped item): S3 + CloudFront static page
+- /count endpoint: Bedrock CountTokens (Haiku) + tiktoken — both counts side by side, v1 hard requirement
+- Doctrine doc lists FROZEN: JA-first + EN
+- Gate: EN + JA counts match Bedrock console tokenizer; page loads over CloudFront
