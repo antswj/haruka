@@ -1,0 +1,4757 @@
+{
+ "meta": {
+  "name": "ja_lints_research",
+  "version": "0.1.0",
+  "generated": "2026-08-11",
+  "purpose": "Seed lexicons for Haruka's Japanese prompt-quality lint rules: vague/hands-off wording, politeness padding, clear task statements, and output-shape specifications.",
+  "language": "ja",
+  "method": "Every entry was collected from live Japanese-language web sources found via Japanese-language queries and actually fetched. No entry is a translation of an English wordlist. Where sources disagree on whether an expression belongs in a list, the disagreement is recorded on the entry rather than silently resolved.",
+  "source_counts": {
+   "vague_words": 40,
+   "cushion_words": 33,
+   "task_verbs": 23,
+   "format_markers": 23,
+   "distinct_domains_total": 71
+  },
+  "caveats": [
+   "confidence is a research artifact, not a tuned weight. 'high' = multiple independent Japanese sources name the expression AND explain why it fails; 'medium' = attested as vague/padding but studied in a different frame (e.g. conversational hedging rather than instructions); 'low' = seed word we could not corroborate from any Japanese source that treats it as problematic.",
+   "The three 'low' vague entries (サクッと / ちゃちゃっと / まるっと) came from the original seed brief. Japanese dictionaries define them neutrally. They are retained with disagreement notes so the decision to include or drop them is explicit, not accidental.",
+   "パパッと was in the seed brief but could not be sourced at all and is deliberately absent.",
+   "The canonical Japanese style guides do NOT contain vague-vocabulary lists. JTF日本語標準スタイルガイド was checked and covers orthography and punctuation only. Japanese vagueness lists live in software-requirements writing, management/coaching blogs, and design-brief blogs instead. Do not cite JTF as authority for the vague_words rule.",
+   "Length markers (〜文字以内で etc.) are detectable but multiple Japanese verification articles report that LLMs frequently fail to obey them. Detecting the marker is not the same as the constraint being honored."
+  ],
+  "verification": {
+   "date": "2026-08-11",
+   "method": "Independent agent re-fetched 10 load-bearing content URLs and 8 license claims and was instructed to look for failures rather than confirmations.",
+   "content_urls_confirmed": 10,
+   "corrections_applied": [
+    "doc.dev1x category names are question-form headings, not the labels previously quoted.",
+    "JTF style guide re-verified at 第4.0版 (2026-07-25); the no-vagueness-section negative result holds.",
+    "Three license errors found and corrected in the D2 report (JTF version history, UniDic licensing, NEologd status) — see LEXICON_REPORT.md."
+   ],
+   "unverified": [
+    "Long-tail entries sourced from a single blog were not individually re-fetched; the 'low' confidence tier and per-entry disagreement notes mark where support is thin.",
+    "GitHub commit metadata was unreachable (API 403, /commits/ robots-blocked), so repo maintenance status rests on committed files and release pages."
+   ]
+  }
+ },
+ "lists": {
+  "vague_words": {
+   "label_ja": "あいまい・丸投げ表現",
+   "description": "Expressions people actually write in requests and prompts that leave the work under-specified or hand the judgment to the other party.",
+   "entry_count": 64,
+   "productive_patterns": [
+    {
+     "pattern": "[任意の主観的形容詞・オノマトペ] + 感じ|具合 + で|に",
+     "regex_sketch": "(?:.{1,8})(?:な)?(?:感じ|具合)(?:で|に)",
+     "why": "The highest-yield finding across the design-brief sources. Japanese vague requests overwhelmingly form as [subjective adjective or onomatopoeia] + 感じ/具合 + で/に, which generates infinitely many surface forms (ラグジュアリーな感じで, イケてる感じで, シュッとした感じで, ぼわっと…). No static wordlist catches these.",
+     "sources": [
+      "https://www.y-create.co.jp/forcreator/possible_gd/",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+     ]
+    },
+    {
+     "pattern": "指示語 with no antecedent in the prompt",
+     "regex_sketch": "(?:あの|例の|その|この)(?:件|やつ|アレ|あたり|辺)",
+     "why": "こそあど reference to context the reader does not have. Distinct failure mode from vague adverbs.",
+     "sources": [
+      "https://educommunication.or.jp/post-4346/",
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    }
+   ],
+   "suggested_fix_templates": {
+    "note": "Three Japanese sources independently converge on the same repair, which gives the lint three distinct suggestion shapes rather than one generic scold.",
+    "templates": [
+     {
+      "id": "number",
+      "ja": "数字に置き換える",
+      "example": "短めに → 100字以内で",
+      "source": "https://aiacademy.jp/media/?p=8049"
+     },
+     {
+      "id": "proper_noun",
+      "ja": "固有名詞で特定する",
+      "example": "例の納期 → 新商品『POOOTA！』の納期を5月4日（木）",
+      "source": "https://next.rikunabi.com/journal/20160222_1/"
+     },
+     {
+      "id": "reason",
+      "ja": "理由・意図を添える",
+      "example": "ロゴをもっと大きく → 目立たせたいので、ロゴをもっと大きく",
+      "source": "https://kmy.website/touch-up-with-reason/"
+     }
+    ]
+   },
+   "entries": [
+    {
+     "expression": "いい感じに",
+     "variants": [
+      "いい感じで",
+      "いい感じにして",
+      "いい感じにまとめといて",
+      "良い感じに",
+      "良い感じで",
+      "イイ感じに",
+      "いい感じ",
+      "なんかいい感じで"
+     ],
+     "confidence": "high",
+     "note": "The single most-cited example across management, design and prompt-writing sources. Diamond ranks it top-5 and calls it 部下に丸投げしているのと同じ. Weblio's thesaurus equates it with うまく／うまい具合に／上手いこと, so those cluster with it.",
+     "sources": [
+      "https://educommunication.or.jp/post-4346/",
+      "https://diamond.jp/articles/-/371403",
+      "https://aiacademy.jp/media/?p=8049",
+      "https://www.y-create.co.jp/forcreator/possible_gd/",
+      "https://thesaurus.weblio.jp/content/%E3%81%84%E3%81%84%E6%84%9F%E3%81%98%E3%81%AB"
+     ]
+    },
+    {
+     "expression": "よしなに",
+     "variants": [
+      "よしなにお願いします",
+      "よしなにお願いいたします",
+      "よしなに頼む",
+      "どうぞよしなに",
+      "良しなに"
+     ],
+     "confidence": "high",
+     "note": "Literally よい具合に — the judgment of what is good is handed entirely to the receiver.",
+     "disagreement": "goiryoku.com says it is 特にビジネスシーンで失礼になる言葉ではない while simultaneously calling it 曖昧な言葉. Not rude, but reliably under-specified.",
+     "sources": [
+      "https://goiryoku.com/yoshina/",
+      "https://note.com/novapen_create/n/na9b376fc2c2c"
+     ]
+    },
+    {
+     "expression": "よろしく",
+     "variants": [
+      "よろしくね",
+      "あの件よろしく",
+      "例の件よろしく",
+      "よろしく頼む"
+     ],
+     "confidence": "high",
+     "note": "Flag only when it stands in place of the actual request, not as a closing greeting.",
+     "sources": [
+      "https://educommunication.or.jp/post-4346/"
+     ]
+    },
+    {
+     "expression": "うまく",
+     "variants": [
+      "上手く",
+      "うまくやっといて",
+      "うまいこと",
+      "上手いこと",
+      "うまい具合に",
+      "うまくまとめといて"
+     ],
+     "confidence": "high",
+     "note": "AI Academy lists it as an NG prompt word because 定義が不明確.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://diamond.jp/articles/-/328065",
+      "https://thesaurus.weblio.jp/content/%E3%81%84%E3%81%84%E6%84%9F%E3%81%98%E3%81%AB"
+     ]
+    },
+    {
+     "expression": "適当に",
+     "variants": [
+      "テキトーに",
+      "てきとうに",
+      "適当な",
+      "テキトー",
+      "適当で",
+      "適当にやっといて"
+     ],
+     "confidence": "high",
+     "note": "Katakana テキトー is unambiguously the negative sense: いい加減で、ゆるく、なんとなくでいいよ.",
+     "disagreement": "適当 carries two opposite senses. eigobu and Weblio document both ほどよい／適切な (positive) and いい加減・雑・杜撰 (negative); Forbes even recommends 適当な as a legitimate 言い換え for ちょうどいい. 適当 in isolation is contested; 適当に as an instruction reads as the いい加減 sense.",
+     "sources": [
+      "https://eigobu.jp/magazine/tekitou",
+      "https://thesaurus.weblio.jp/content/%E9%81%A9%E5%BD%93%E3%81%AA",
+      "https://forbesjapan.com/articles/detail/73841"
+     ]
+    },
+    {
+     "expression": "ざっくり",
+     "variants": [
+      "ざっくりと",
+      "ザックリ",
+      "ざっくりまとめて",
+      "ざっくり言うと",
+      "大雑把に"
+     ],
+     "confidence": "medium",
+     "note": "Conditional. Forbes says it is legitimate for 概算・概要 at an early stage but casual and unfit for formal docs, and warns 相手が期待する詳細度を確認する必要がある. Acceptable when a tolerance follows.",
+     "sources": [
+      "https://forbesjapan.com/articles/detail/73182"
+     ]
+    },
+    {
+     "expression": "なんとなく",
+     "variants": [
+      "何となく",
+      "なんとなくで",
+      "ナントナク"
+     ],
+     "confidence": "medium",
+     "note": "明確な理由がないことを示す表現で、感覚的な曖昧さを含んでいます.",
+     "sources": [
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "とりあえず",
+     "variants": [
+      "取り敢えず",
+      "とりあえずお願い",
+      "とりあえずやっといて",
+      "とりあえずで"
+     ],
+     "confidence": "high",
+     "note": "Diamond ranks 「とりあえずお願い」 the WORST vague instruction: 何を、いつまでに、どのレベルでやるのか全く伝わらない。指示として成立していない.",
+     "sources": [
+      "https://diamond.jp/articles/-/371403",
+      "https://diamond.jp/articles/-/328065"
+     ]
+    },
+    {
+     "expression": "臨機応変に",
+     "variants": [
+      "臨機応変に対応して",
+      "臨機応変な対応で",
+      "臨機応変で",
+      "柔軟に対応して"
+     ],
+     "confidence": "high",
+     "note": "Diamond ranks it #2 worst: 判断基準を与えずに済ませるのは育成放棄.",
+     "disagreement": "Diamond treats it as a hands-off dodge; Forbes/Weblio treat 臨機応変 as a positive competency word. Split is by role — fine describing a person's ability, vague as an instruction.",
+     "sources": [
+      "https://diamond.jp/articles/-/371403",
+      "https://oggi.jp/7697184"
+     ]
+    },
+    {
+     "expression": "適宜",
+     "variants": [
+      "てきぎ",
+      "適宜対応",
+      "適宜お願いします",
+      "適宜ご対応ください",
+      "適宜判断して"
+     ],
+     "confidence": "medium",
+     "note": "Conditional. Oggi documents two senses, one of which is literally 自分で判断してください. Acceptable describing your OWN action (適宜ご連絡いたします); directing it at a 目上 can be 失礼.",
+     "sources": [
+      "https://oggi.jp/7697184",
+      "https://goiryoku.com/yoshina/"
+     ]
+    },
+    {
+     "expression": "随時",
+     "variants": [
+      "ずいじ",
+      "随時対応",
+      "随時ご連絡",
+      "必要に応じて",
+      "都度"
+     ],
+     "confidence": "medium",
+     "note": "Oggi glosses it as 必要に応じて／好きなときに — no schedule is actually committed.",
+     "sources": [
+      "https://oggi.jp/7697184"
+     ]
+    },
+    {
+     "expression": "お任せします",
+     "variants": [
+      "お任せで",
+      "おまかせ",
+      "おまかせで",
+      "お任せいたします",
+      "任せるよ",
+      "任せた",
+      "好きにやってください",
+      "あなたのセンスを信用していますので"
+     ],
+     "confidence": "high",
+     "note": "y-create documents the subtext designers actually receive: freedom granted, acceptance criterion silently retained.",
+     "sources": [
+      "https://www.y-create.co.jp/forcreator/possible_gd/",
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "気を利かせて",
+     "variants": [
+      "気をきかせて",
+      "気を利かせる",
+      "気が利く対応で"
+     ],
+     "confidence": "high",
+     "note": "察する能力に依存した指示であり、客観的基準がない.",
+     "sources": [
+      "https://strongpoint.co.jp/%E6%9B%96%E6%98%A7%E3%81%AA%E8%A8%80%E8%91%89%E3%81%A7%E6%8C%87%E7%A4%BA%E3%82%92%E5%87%BA%E3%81%99%E4%B8%8A%E5%8F%B8%E3%81%8C%E3%80%81%E9%83%A8%E4%B8%8B%E3%81%AE%E7%94%9F%E7%94%A3%E6%80%A7%E3%82%92/"
+     ]
+    },
+    {
+     "expression": "察して",
+     "variants": [
+      "察してほしい",
+      "空気を読んで",
+      "言わなくてもわかるでしょ",
+      "汲み取って"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://educommunication.or.jp/post-4346/",
+      "https://note.com/novapen_create/n/na9b376fc2c2c"
+     ]
+    },
+    {
+     "expression": "しっかり",
+     "variants": [
+      "しっかりと",
+      "しっかりやって",
+      "シッカリ"
+     ],
+     "confidence": "high",
+     "note": "何が「しっかり」なのか定義されていない. doc.dev1x classifies it under 情緒的表現.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://strongpoint.co.jp/%E6%9B%96%E6%98%A7%E3%81%AA%E8%A8%80%E8%91%89%E3%81%A7%E6%8C%87%E7%A4%BA%E3%82%92%E5%87%BA%E3%81%99%E4%B8%8A%E5%8F%B8%E3%81%8C%E3%80%81%E9%83%A8%E4%B8%8B%E3%81%AE%E7%94%9F%E7%94%A3%E6%80%A7%E3%82%92/",
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "ちゃんと",
+     "variants": [
+      "ちゃんと〜",
+      "ちゃんとやって",
+      "ちゃんと考えて",
+      "チャンと"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://strongpoint.co.jp/%E6%9B%96%E6%98%A7%E3%81%AA%E8%A8%80%E8%91%89%E3%81%A7%E6%8C%87%E7%A4%BA%E3%82%92%E5%87%BA%E3%81%99%E4%B8%8A%E5%8F%B8%E3%81%8C%E3%80%81%E9%83%A8%E4%B8%8B%E3%81%AE%E7%94%9F%E7%94%A3%E6%80%A7%E3%82%92/"
+     ]
+    },
+    {
+     "expression": "きちんと",
+     "variants": [
+      "きちんと〜",
+      "きっちり",
+      "キチンと"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    },
+    {
+     "expression": "頑張って",
+     "variants": [
+      "がんばって",
+      "もっと頑張って",
+      "気合いを入れて"
+     ],
+     "confidence": "medium",
+     "note": "Listed among 行動に落とせない抽象的な言葉.",
+     "sources": [
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "工夫して",
+     "variants": [
+      "ひと工夫して",
+      "工夫してやって"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "お客様目線で",
+     "variants": [
+      "ユーザー目線で",
+      "顧客視点で",
+      "相手の立場に立って"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "なるべく早く",
+     "variants": [
+      "なるはや",
+      "なる早",
+      "ナルハヤ",
+      "できるだけ早く",
+      "可能な限り早く",
+      "なるべく",
+      "できるだけ"
+     ],
+     "confidence": "high",
+     "note": "Oggi documents actual interpretation spread from 5分以内 to 手が空いてから.",
+     "sources": [
+      "https://www.nikkan-gendai.com/articles/view/life/336449",
+      "https://oggi.jp/7028898",
+      "https://educommunication.or.jp/post-3826/"
+     ]
+    },
+    {
+     "expression": "早めに",
+     "variants": [
+      "はやめに",
+      "少し早め",
+      "早めで",
+      "お早めに"
+     ],
+     "confidence": "high",
+     "note": "Rikunabi's fix pattern: 少し早め → 15分早く、13時45分.",
+     "sources": [
+      "https://next.rikunabi.com/journal/20160222_1/"
+     ]
+    },
+    {
+     "expression": "すぐに",
+     "variants": [
+      "至急",
+      "速やかに",
+      "ただちに",
+      "即時",
+      "瞬時に",
+      "素早く",
+      "リアルタイムに",
+      "ほぼリアルタイムに"
+     ],
+     "confidence": "medium",
+     "note": "Grouped as 時間の短さを表す曖昧語 with no measurable threshold.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3"
+     ]
+    },
+    {
+     "expression": "あとで",
+     "variants": [
+      "後で",
+      "あとで見るからやっといて",
+      "のちほど",
+      "後ほど"
+     ],
+     "confidence": "high",
+     "note": "JTUA reports a real service complaint where のちほどお電話差し上げます was read as anywhere from 1、2分 to 2、3日.",
+     "sources": [
+      "https://diamond.jp/articles/-/371403",
+      "https://www.jtua.or.jp/education/column/skillup/201405_01/"
+     ]
+    },
+    {
+     "expression": "そのうちに",
+     "variants": [
+      "そのうち",
+      "近いうちに",
+      "おいおい",
+      "追って"
+     ],
+     "confidence": "medium",
+     "note": "具体的な時期がなく、実際に計画が実現することはまれ.",
+     "sources": [
+      "https://www.jtua.or.jp/education/column/skillup/201405_01/"
+     ]
+    },
+    {
+     "expression": "ちょっと",
+     "variants": [
+      "ちょっと調べておいて",
+      "ちょっと調整しておいて",
+      "ちょっと考えてみてよ",
+      "ちょっとだけ",
+      "少し"
+     ],
+     "confidence": "high",
+     "note": "Diamond ranks 「ちょっと調べておいて」 #4 worst: 『ちょっと』の範囲が不明確なため、部下は工数と成果が中途半端になる.",
+     "sources": [
+      "https://diamond.jp/articles/-/371403",
+      "https://souken.shikigaku.jp/3874/",
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "諸々",
+     "variants": [
+      "もろもろ",
+      "諸々の",
+      "諸々よろしく",
+      "諸般の"
+     ],
+     "confidence": "medium",
+     "note": "いろいろなこと、複数のことをひとまとめにしてざっくり表す言葉. goiryoku flags 諸々申し訳ございません to a 目上 as 失礼 because it withholds the specifics.",
+     "sources": [
+      "https://goiryoku.com/moromoro/"
+     ]
+    },
+    {
+     "expression": "いろいろ",
+     "variants": [
+      "色々",
+      "色々な",
+      "いろんな",
+      "イロイロ",
+      "様々"
+     ],
+     "confidence": "medium",
+     "note": "ビジネスシーンや正式な文章では曖昧な印象を与える場合があります.",
+     "sources": [
+      "https://domani.shogakukan.co.jp/1062760"
+     ]
+    },
+    {
+     "expression": "など",
+     "variants": [
+      "等",
+      "〜など",
+      "などなど",
+      "といった",
+      "その他",
+      "他"
+     ],
+     "confidence": "medium",
+     "note": "The open-ended set is never enumerated, so scope is undefined.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    },
+    {
+     "expression": "それなりに",
+     "variants": [
+      "それなり",
+      "それなりの",
+      "ソレナリに",
+      "そこそこ",
+      "そこそこの"
+     ],
+     "confidence": "medium",
+     "note": "期待を大きく下回らず、それでも突出していない状態. Rikunabi's fix: そこそこ歩きます → 調布駅から15分ほど歩きます.",
+     "sources": [
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f",
+      "https://next.rikunabi.com/journal/20160222_1/"
+     ]
+    },
+    {
+     "expression": "まあまあ",
+     "variants": [
+      "まぁまぁ",
+      "可もなく不可もなく",
+      "ぼちぼち"
+     ],
+     "confidence": "medium",
+     "note": "満足とも不満とも取れる depending on tone.",
+     "sources": [
+      "https://www.jtua.or.jp/education/column/skillup/201405_01/",
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "一応",
+     "variants": [
+      "いちおう",
+      "イチオウ",
+      "一応やっといて",
+      "とりあえず一応"
+     ],
+     "confidence": "medium",
+     "note": "完全ではないが最低限の基準を満たしている — the bar itself is never stated.",
+     "sources": [
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "適度に",
+     "variants": [
+      "適度な",
+      "ほどよく",
+      "程よく",
+      "ほどほどに",
+      "程々の"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://thesaurus.weblio.jp/content/%E9%81%A9%E5%BD%93%E3%81%AA"
+     ]
+    },
+    {
+     "expression": "多めに",
+     "variants": [
+      "多め",
+      "少なめ",
+      "短め",
+      "長め",
+      "短く",
+      "長く"
+     ],
+     "confidence": "high",
+     "note": "AI Academy's fixes: 短め→100字以内, 長め→300〜400字. Rikunabi's: 多め→全部で18部.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://next.rikunabi.com/journal/20160222_1/"
+     ]
+    },
+    {
+     "expression": "十分な",
+     "variants": [
+      "十分に",
+      "充分な",
+      "必要十分な",
+      "重大な",
+      "重要な"
+     ],
+     "confidence": "medium",
+     "note": "Grouped under 程度を表す曖昧語 by two independent sources.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3"
+     ]
+    },
+    {
+     "expression": "基本的な",
+     "variants": [
+      "基本的に",
+      "一般的な",
+      "一般的に",
+      "通常の",
+      "通常は"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3"
+     ]
+    },
+    {
+     "expression": "わかりやすく",
+     "variants": [
+      "分かりやすく",
+      "分かりやすくして",
+      "判りやすく",
+      "わかりやすい",
+      "わかりやすくまとめて"
+     ],
+     "confidence": "high",
+     "note": "Fix is to name the audience.",
+     "disagreement": "This same expression appears in format_markers as a tone marker. It specifies a direction without a target, so it is simultaneously a (weak) shape spec and a vague adverb. Do not let both rules fire on one occurrence.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+     ]
+    },
+    {
+     "expression": "見やすく",
+     "variants": [
+      "見やすい",
+      "読みやすく",
+      "もっと読みやすくしてほしい",
+      "見やすくして"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://karakuriworks-blog.com/value/vague-order-management/",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+     ]
+    },
+    {
+     "expression": "詳しく",
+     "variants": [
+      "詳細に",
+      "詳しく教えて",
+      "もっと詳しく",
+      "細かく"
+     ],
+     "confidence": "high",
+     "note": "詳細度が不明確. Fix is 各項目を3文以上で説明.",
+     "disagreement": "Also appears in format_markers as a length marker. Same double-classification caveat as わかりやすく.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://note.com/novapen_create/n/na9b376fc2c2c"
+     ]
+    },
+    {
+     "expression": "シンプルに",
+     "variants": [
+      "シンプルな",
+      "シンプルで",
+      "すっきり",
+      "スッキリと"
+     ],
+     "confidence": "high",
+     "note": "単純さの度合いが不定. Fix is 中学生でも理解できる言葉.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049"
+     ]
+    },
+    {
+     "expression": "バランスよく",
+     "variants": [
+      "バランス良く",
+      "バランスを見て",
+      "バランスよくまとめて"
+     ],
+     "confidence": "high",
+     "note": "基準が曖昧. Fix is to state each item's allocation.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049"
+     ]
+    },
+    {
+     "expression": "自然に",
+     "variants": [
+      "自然な",
+      "自然な感じで",
+      "ナチュラルに"
+     ],
+     "confidence": "high",
+     "note": "主観的表現.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049"
+     ]
+    },
+    {
+     "expression": "適切に",
+     "variants": [
+      "適切な",
+      "適切に対応",
+      "適切に処理",
+      "しかるべく"
+     ],
+     "confidence": "high",
+     "note": "解釈の幅が広い.",
+     "disagreement": "IMPORTANT LOOP. Forbes and Oggi present 適切な as the formal, correct upgrade word for ざっくり／ちょうどいい／適当な, while AI Academy lists it as an NG prompt word. Both are right in their own frame (register vs specificity) — which means a de-vaguing rewrite can produce text that trips this same rule. Do not suggest 適切に as a fix.",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://oggi.jp/7697184",
+      "https://forbesjapan.com/articles/detail/73841"
+     ]
+    },
+    {
+     "expression": "プロっぽく",
+     "variants": [
+      "プロっぽい",
+      "プロっぽい感じで",
+      "〜っぽく",
+      "それっぽく",
+      "それっぽい"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://aiacademy.jp/media/?p=8049",
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "〜な感じで",
+     "variants": [
+      "いい感じで",
+      "ラグジュアリーな感じで",
+      "イケてる感じで",
+      "最近流行っている感じで",
+      "インパクトある感じで",
+      "オシャレな感じ",
+      "って感じ",
+      "こんな感じで"
+     ],
+     "confidence": "high",
+     "note": "Prefer the productive_patterns regex over this literal entry — the template generates unbounded surface forms.",
+     "sources": [
+      "https://www.y-create.co.jp/forcreator/possible_gd/",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/",
+      "https://www.lang.nagoya-u.ac.jp/nichigen/menu7_folder/symposium/pdf/10/07.pdf"
+     ]
+    },
+    {
+     "expression": "おしゃれに",
+     "variants": [
+      "オシャレに",
+      "おしゃれにして！",
+      "スタイリッシュに",
+      "かっこよく"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://www.y-create.co.jp/forcreator/possible_gd/",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+     ]
+    },
+    {
+     "expression": "もっと",
+     "variants": [
+      "もっと大きく",
+      "もっとインパクトを",
+      "もう少し",
+      "もうちょっと",
+      "もっとこう"
+     ],
+     "confidence": "medium",
+     "note": "Conditional. Becomes actionable the moment the reason is attached: ロゴをもっと大きく vs 目立たせたいので、ロゴをもっと大きく. Suppress the flag when a 〜ので／〜ため clause is adjacent.",
+     "sources": [
+      "https://kmy.website/touch-up-with-reason/",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+     ]
+    },
+    {
+     "expression": "なんか",
+     "variants": [
+      "何か",
+      "なんか違う",
+      "なんだかぱっとしない",
+      "なんかスカスカしてる",
+      "なんかいい",
+      "何かいい",
+      "なんかこう"
+     ],
+     "confidence": "high",
+     "note": "Doubles as a corpus-attested ぼかし言葉 (Nagoya Univ.) and as a real request opener (なんかいい感じでお願い).",
+     "sources": [
+      "https://note.com/novapen_create/n/na9b376fc2c2c",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/",
+      "https://www.lang.nagoya-u.ac.jp/nichigen/menu7_folder/symposium/pdf/10/07.pdf"
+     ]
+    },
+    {
+     "expression": "思ってたのと違う",
+     "variants": [
+      "イメージと違う",
+      "ちょっと思ってたのと違う",
+      "今ひとつ",
+      "いまいち",
+      "イマイチ",
+      "なにかが足りない"
+     ],
+     "confidence": "high",
+     "note": "Post-hoc rejection with no criterion. Diamond's mechanism: the requester 自分の中でも、何がベストなのか言語化できていなかった.",
+     "sources": [
+      "https://diamond.jp/articles/-/328065",
+      "https://anagrams.jp/blog/abstract-design-requests-and-solutions/",
+      "https://souken.shikigaku.jp/3874/"
+     ]
+    },
+    {
+     "expression": "前と同じような",
+     "variants": [
+      "前と同じようなやつで",
+      "いつもの感じで",
+      "この前みたいに",
+      "例のやつで"
+     ],
+     "confidence": "high",
+     "sources": [
+      "https://note.com/sunao_7212sunab/n/n89b8be32e27a"
+     ]
+    },
+    {
+     "expression": "あの件",
+     "variants": [
+      "例の件",
+      "例のアレ",
+      "あれ",
+      "その辺",
+      "そのあたり",
+      "これら",
+      "それら",
+      "当該の〇〇"
+     ],
+     "confidence": "high",
+     "note": "こそあど/指示語 with no antecedent. Rikunabi's fix: 例の納期 → 新商品『POOOTA！』の納期を来週の木曜日（5月4日）.",
+     "sources": [
+      "https://educommunication.or.jp/post-4346/",
+      "https://next.rikunabi.com/journal/20160222_1/",
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    },
+    {
+     "expression": "サクッと",
+     "variants": [
+      "さくっと",
+      "サクっと",
+      "サクッとやって",
+      "サクッとお願い"
+     ],
+     "confidence": "low",
+     "note": "Weblio: 手際よく行うさま。軽快なさま — asserts effortlessness without specifying scope or time budget.",
+     "disagreement": "NO Japanese business-writing or prompt source flags サクッと as a bad instruction. Dictionaries define it neutrally as a colloquial manner adverb. Flagging it at the same severity as いい感じに is not defensible from these sources.",
+     "sources": [
+      "https://www.weblio.jp/content/%E3%82%B5%E3%82%AF%E3%83%83%E3%81%A8"
+     ]
+    },
+    {
+     "expression": "ちゃちゃっと",
+     "variants": [
+      "チャチャッと",
+      "ちゃっちゃと",
+      "ちゃちゃっとやって",
+      "ちゃちゃっと済ませて"
+     ],
+     "confidence": "low",
+     "note": "デジタル大辞泉: 素早く、手早く. Informal register.",
+     "disagreement": "Same caveat as サクッと — dictionary-neutral, not flagged as problematic by any business or writing source consulted.",
+     "sources": [
+      "https://kotobank.jp/word/%E3%81%A1%E3%82%84%E3%81%A1%E3%82%84%E3%81%A4%E3%81%A8-566813"
+     ]
+    },
+    {
+     "expression": "まるっと",
+     "variants": [
+      "丸っと",
+      "マルっと",
+      "まるっとお願い",
+      "まるごと"
+     ],
+     "confidence": "low",
+     "note": "Weblio: まるごと。そっくり。全部, noted as dialectal/colloquial (東海地方などでよく用いられる). Vague because 'all of it' names no boundary.",
+     "disagreement": "Dictionary sources treat it as a register/dialect item, not an ambiguity problem.",
+     "sources": [
+      "https://www.weblio.jp/content/%E3%81%BE%E3%82%8B%E3%81%A3%E3%81%A8"
+     ]
+    },
+    {
+     "expression": "対応する",
+     "variants": [
+      "対応しておいて",
+      "対応をお願い",
+      "対処する",
+      "処理する",
+      "チェックする"
+     ],
+     "confidence": "medium",
+     "note": "曖昧な動詞 — the verb names no observable end state.",
+     "disagreement": "Overlaps task_verbs. These are grammatically clear asks but semantically empty ones, so a prompt containing only 対応してください should score as HAVING a task verb and ALSO as vague. Treat as an intentional overlap, not a bug.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3"
+     ]
+    },
+    {
+     "expression": "検討する",
+     "variants": [
+      "検討しておいて",
+      "検討します",
+      "考えておきましょう",
+      "見直す",
+      "見直しておいて",
+      "調整する"
+     ],
+     "confidence": "medium",
+     "note": "JTUA additionally flags 考えておきましょう as a conventional indirect REFUSAL — so it is both under-specified and potentially non-literal.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://www.jtua.or.jp/education/column/skillup/201405_01/",
+      "https://note.com/sunao_7212sunab/n/n89b8be32e27a"
+     ]
+    },
+    {
+     "expression": "最適化する",
+     "variants": [
+      "最適化しておいて",
+      "推進する",
+      "管理する",
+      "整合を取る",
+      "適合させる",
+      "準備する"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/",
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3"
+     ]
+    },
+    {
+     "expression": "〜的な",
+     "variants": [
+      "〜っぽい",
+      "〜みたいな",
+      "〜という感じ",
+      "って感じ",
+      "〜とか",
+      "というか"
+     ],
+     "confidence": "medium",
+     "note": "The corpus-attested ぼかし言葉 cluster. tech-writ-lit lists 〜みたいな／〜ていうか as expressions to strip from technical writing.",
+     "sources": [
+      "https://www.lang.nagoya-u.ac.jp/nichigen/menu7_folder/symposium/pdf/10/07.pdf",
+      "https://tech-writ-lit.com/tecwrit-kakikata/"
+     ]
+    },
+    {
+     "expression": "微妙",
+     "variants": [
+      "びみょう",
+      "ビミョー",
+      "微妙です"
+     ],
+     "confidence": "medium",
+     "note": "Imidas cites 文化庁 survey data: 96.3% of ages 16-19 use 微妙 to signal non-committal refusal.",
+     "sources": [
+      "https://imidas.jp/genre/detail/L-105-0039.html"
+     ]
+    },
+    {
+     "expression": "〜と思います",
+     "variants": [
+      "だろう",
+      "かもしれない",
+      "といえるかもしれない",
+      "たぶん",
+      "多分大丈夫でしょう",
+      "おそらく",
+      "〜のようであり"
+     ],
+     "confidence": "medium",
+     "note": "Hedged commitment. tech-writ-lit tells writers to replace these with 数値データ. This family is the one place an existing lexicon covers you — see Tsutsuji and textlint-rule-ja-no-weak-phrase in the D2 report.",
+     "sources": [
+      "https://tech-writ-lit.com/tecwrit-kakikata/",
+      "https://www.jtua.or.jp/education/column/skillup/201405_01/"
+     ]
+    },
+    {
+     "expression": "どうにか",
+     "variants": [
+      "なんとか",
+      "何とか",
+      "なんとかして",
+      "なんとかなる",
+      "どうにかして"
+     ],
+     "confidence": "medium",
+     "sources": [
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f"
+     ]
+    },
+    {
+     "expression": "ぼんやり",
+     "variants": [
+      "ぼんやりと",
+      "ぼわっと",
+      "ふんわり",
+      "ふんわりと"
+     ],
+     "confidence": "medium",
+     "note": "ここをもっとぼわっと is quoted verbatim as a real client instruction.",
+     "sources": [
+      "https://note.com/tasho_kento/n/n8e06fd3d0b5f",
+      "https://www.y-create.co.jp/forcreator/possible_gd/"
+     ]
+    },
+    {
+     "expression": "シュッと",
+     "variants": [
+      "しゅっと",
+      "シュッとした",
+      "シュッとさせて"
+     ],
+     "confidence": "low",
+     "note": "Quoted verbatim from a real client brief: 全体的に、もっと\"シュッ\"として、かつ\"ワクワク\"する感じに。でも高級感は崩さないで.",
+     "disagreement": "Single source, and that source is a Q&A board rather than a guide. Real attested usage, weak authority.",
+     "sources": [
+      "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q14327375889"
+     ]
+    },
+    {
+     "expression": "簡単",
+     "variants": [
+      "簡単に",
+      "効率的",
+      "効率的に",
+      "簡単でいいので"
+     ],
+     "confidence": "medium",
+     "note": "Asserts a magnitude that is never quantified.",
+     "sources": [
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://doc.dev1x.org/sweng/12/",
+     "title": "あいまい語一覧（ソフトウェア工学）",
+     "type": "guide",
+     "what_it_gave": "The densest single source: a categorized あいまい語一覧. NOTE (verified 2026-08-11): the categories exist as content but three are phrased as QUESTION headings, not the labels often quoted — vague verbs sit under 「具体的に何をするのか?」, degree under 「基準は何か?」, reference under 「具体的に何を指すのか?」. Literal headings 「曖昧な動詞」/「程度」 do not exist on the page; do not quote them as section names."
+    },
+    {
+     "url": "https://diamond.jp/articles/-/371403",
+     "title": "仕事ができない上司が使う「曖昧な指示」ワースト5 — ダイヤモンド・オンライン",
+     "type": "blog",
+     "what_it_gave": "Ranked list with reasoning: とりあえずお願い(1)／臨機応変に対応して(2)／あとで見るからやっといて(3)／ちょっと調べておいて(4)／いい感じに頼む(5)."
+    },
+    {
+     "url": "https://diamond.jp/articles/-/328065",
+     "title": "「指示」が曖昧で困る…伝わらない根本的理由 — ダイヤモンド・オンライン",
+     "type": "blog",
+     "what_it_gave": "The 'the requester has no image either' mechanism; 思ってたのと違うんだよな."
+    },
+    {
+     "url": "https://aiacademy.jp/media/?p=8049",
+     "title": "プロンプトでやってはいけない5つのNG行動 — AI Academy Media",
+     "type": "guide",
+     "what_it_gave": "An 11-row NG→fix table specifically for PROMPTS — the closest source to Haruka's exact use case."
+    },
+    {
+     "url": "https://www.y-create.co.jp/forcreator/possible_gd/",
+     "title": "【「お任せします」の恐怖】デザイナーあるある — Y's Create",
+     "type": "blog",
+     "what_it_gave": "The 〜な感じで + (※私が思う) subtext analysis that produced the productive pattern."
+    },
+    {
+     "url": "https://anagrams.jp/blog/abstract-design-requests-and-solutions/",
+     "title": "「抽象的な要望」を具体的にする — アナグラム株式会社",
+     "type": "blog",
+     "what_it_gave": "8 verbatim abstract client requests with the concrete question that resolves each."
+    },
+    {
+     "url": "https://www.jtua.or.jp/education/column/skillup/201405_01/",
+     "title": "あいまい言葉はトラブルのもと — 日本電信電話ユーザ協会",
+     "type": "guide",
+     "what_it_gave": "そのうちに／まあまあです／多分大丈夫でしょう／のちほど／考えておきましょう with a documented real-world interpretation-range complaint."
+    },
+    {
+     "url": "https://oggi.jp/7697184",
+     "title": "「適宜」とはどんな意味？ — Oggi.jp",
+     "type": "guide",
+     "what_it_gave": "適宜's two senses including 自分で判断してください, and the 随時／適時／適切／相応 distinction."
+    },
+    {
+     "url": "https://oggi.jp/7028898",
+     "title": "「なるはや」っていつまで？ — Oggi.jp",
+     "type": "guide",
+     "what_it_gave": "Documented interpretation spread for なるはや."
+    },
+    {
+     "url": "https://goiryoku.com/yoshina/",
+     "title": "「よしなに」の意味や使い方 — 語彙力.com",
+     "type": "dictionary",
+     "what_it_gave": "よしなに = よい具合になるように, explicit 曖昧な言葉 label, and the not-rude-but-vague split."
+    },
+    {
+     "url": "https://goiryoku.com/moromoro/",
+     "title": "「諸々」の意味とビジネスでの使い方 — 語彙力.com",
+     "type": "dictionary",
+     "what_it_gave": "諸々 defined as ざっくり表す言葉."
+    },
+    {
+     "url": "https://educommunication.or.jp/post-4346/",
+     "title": "「あの件、よろしくね」は指示ではない — 教育コミュニケーション協会",
+     "type": "guide",
+     "what_it_gave": "よろしく／あの件／例の件 as non-instructions; the 察して dependency."
+    },
+    {
+     "url": "https://educommunication.or.jp/post-3826/",
+     "title": "部下への指示の出し方 — 教育コミュニケーション協会",
+     "type": "guide",
+     "what_it_gave": "頑張って／工夫して／しっかりやって／お客様目線で／なるべく早く／任せるよ."
+    },
+    {
+     "url": "https://strongpoint.co.jp/%E6%9B%96%E6%98%A7%E3%81%AA%E8%A8%80%E8%91%89%E3%81%A7%E6%8C%87%E7%A4%BA%E3%82%92%E5%87%BA%E3%81%99%E4%B8%8A%E5%8F%B8%E3%81%8C%E3%80%81%E9%83%A8%E4%B8%8B%E3%81%AE%E7%94%9F%E7%94%A3%E6%80%A7%E3%82%92/",
+     "title": "曖昧な言葉で指示を出す上司が、部下の生産性を奪っている — ストロングポイント",
+     "type": "blog",
+     "what_it_gave": "Only source that surfaced 気を利かせて; per-phrase failure analysis."
+    },
+    {
+     "url": "https://next.rikunabi.com/journal/20160222_1/",
+     "title": "仕事で嫌われる「あいまい文章」にサヨナラしよう — リクナビNEXTジャーナル",
+     "type": "guide",
+     "what_it_gave": "A 9-row vague→concrete conversion table — the clearest fix-pattern data."
+    },
+    {
+     "url": "https://eigobu.jp/magazine/tekitou",
+     "title": "「適当」は逆の意味が2つある！？ — eigobu",
+     "type": "dictionary",
+     "what_it_gave": "The two opposed senses of 適当; katakana テキトー collapses to the いい加減 sense only."
+    },
+    {
+     "url": "https://thesaurus.weblio.jp/content/%E9%81%A9%E5%BD%93%E3%81%AA",
+     "title": "「適当な」の言い換えや類語 — Weblio類語辞典",
+     "type": "dictionary",
+     "what_it_gave": "Two separate synonym sets for 適当な — corroborates the disagreement."
+    },
+    {
+     "url": "https://thesaurus.weblio.jp/content/%E3%81%84%E3%81%84%E6%84%9F%E3%81%98%E3%81%AB",
+     "title": "「いい感じに」の言い換えや類語 — Weblio類語辞典",
+     "type": "dictionary",
+     "what_it_gave": "Confirms いい感じに ≈ うまい具合に／うまく／上手いこと — justifies clustering these."
+    },
+    {
+     "url": "https://forbesjapan.com/articles/detail/73182",
+     "title": "「ざっくり」の意味とビジネスシーンでの使い方 — Forbes JAPAN",
+     "type": "guide",
+     "what_it_gave": "ざっくり's casual register and the contexts where it IS acceptable."
+    },
+    {
+     "url": "https://forbesjapan.com/articles/detail/73841",
+     "title": "「ちょうどいい」の言い換え表現 — Forbes JAPAN",
+     "type": "guide",
+     "what_it_gave": "Recommends 適当な as a replacement — the 適切に/適当な disagreement."
+    },
+    {
+     "url": "https://domani.shogakukan.co.jp/1062760",
+     "title": "曖昧な「色々」という表現を使いこなすには？ — Domani（小学館）",
+     "type": "guide",
+     "what_it_gave": "色々 as 曖昧 in formal writing plus 言い換え."
+    },
+    {
+     "url": "https://note.com/tasho_kento/n/n8e06fd3d0b5f",
+     "title": "曖昧な日本語表現とその意味！20の例を紹介 — note",
+     "type": "blog",
+     "what_it_gave": "Primary source for なんとなく／それなりに／ぼちぼち／いまいち／一応／どうにか／ぼんやり."
+    },
+    {
+     "url": "https://note.com/novapen_create/n/na9b376fc2c2c",
+     "title": "曖昧指示で損してない？生成AIが理解する書き方9選 — note",
+     "type": "blog",
+     "what_it_gave": "AI-specific: よしなに…／なんかいい感じでお願い as prompts that fail."
+    },
+    {
+     "url": "https://note.com/sunao_7212sunab/n/n89b8be32e27a",
+     "title": "指示があいまいな上司に振り回されないための3つの対処法 — note",
+     "type": "blog",
+     "what_it_gave": "いい感じにまとめておいて／前と同じようなやつで／ちょっと調整しておいて."
+    },
+    {
+     "url": "https://karakuriworks-blog.com/value/vague-order-management/",
+     "title": "上司のふんわり指示にもう泣かない！ — カラクリワークス",
+     "type": "blog",
+     "what_it_gave": "なる早でグラフが欲しい／見やすくグラフにしておいて."
+    },
+    {
+     "url": "https://souken.shikigaku.jp/3874/",
+     "title": "指示があいまいな上司はチームを崩壊させる — 識学総研",
+     "type": "blog",
+     "what_it_gave": "Dialogue-form examples: なんかこれ、今ひとつなにかが足りないんだよね."
+    },
+    {
+     "url": "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q14327375889",
+     "title": "クライアントからの「いい感じに修正して」という指示に、もう限界です — Yahoo!知恵袋",
+     "type": "qa",
+     "what_it_gave": "Unfiltered real-world briefs; the only source for シュッと."
+    },
+    {
+     "url": "https://kmy.website/touch-up-with-reason/",
+     "title": "デザイナーを動かす良いデザイン修正指示とダメな指示 — つくるデポ",
+     "type": "blog",
+     "what_it_gave": "The attach-the-reason rule — key evidence that もっと〜 is conditionally OK."
+    },
+    {
+     "url": "https://tech-writ-lit.com/tecwrit-kakikata/",
+     "title": "テクニカルライティングで避けたい日常の言い方・書き方",
+     "type": "styleguide",
+     "what_it_gave": "〜みたいな／〜ていうか／といえるかもしれない／だろう flagged as あいまい表現."
+    },
+    {
+     "url": "https://xtech.nikkei.com/atcl/nxt/column/18/00611/022200001/?P=3",
+     "title": "曖昧な日本語表現、4つのNGパターン — 日経クロステック",
+     "type": "guide",
+     "what_it_gave": "Independent corroboration of doc.dev1x's lists in a major IT publication."
+    },
+    {
+     "url": "https://www.lang.nagoya-u.ac.jp/nichigen/menu7_folder/symposium/pdf/10/07.pdf",
+     "title": "日常会話における「曖昧表現」の使用目的と効果（許夏玲） — 名古屋大学",
+     "type": "academic",
+     "what_it_gave": "Academic 4-way classification of 曖昧さ and 9 studied ぼかし表現."
+    },
+    {
+     "url": "https://imidas.jp/genre/detail/L-105-0039.html",
+     "title": "あいまい表現 — イミダス 時事用語事典",
+     "type": "dictionary",
+     "what_it_gave": "Encyclopedic definition plus 文化庁 survey figures on 微妙."
+    },
+    {
+     "url": "https://www.weblio.jp/content/%E3%82%B5%E3%82%AF%E3%83%83%E3%81%A8",
+     "title": "「サクッと」の意味や使い方 — Weblio辞書",
+     "type": "dictionary",
+     "what_it_gave": "Register confirmation for サクッと, with NO vagueness flag."
+    },
+    {
+     "url": "https://www.weblio.jp/content/%E3%81%BE%E3%82%8B%E3%81%A3%E3%81%A8",
+     "title": "「丸っと(まるっと)」の意味や使い方 — Weblio辞書",
+     "type": "dictionary",
+     "what_it_gave": "まるっと as dialectal (東海地方)."
+    },
+    {
+     "url": "https://kotobank.jp/word/%E3%81%A1%E3%82%84%E3%81%A1%E3%82%84%E3%81%A4%E3%81%A8-566813",
+     "title": "ちゃちゃっと — コトバンク（デジタル大辞泉）",
+     "type": "dictionary",
+     "what_it_gave": "ちゃちゃっと = 素早く、手早く, colloquial."
+    },
+    {
+     "url": "https://www.nikkan-gendai.com/articles/view/life/336449",
+     "title": "指示を出すときの「なるべく早く」は避ける — 日刊ゲンダイ",
+     "type": "blog",
+     "what_it_gave": "Direct assertion that なるべく早く should be avoided in instructions."
+    },
+    {
+     "url": "https://www.hitachi-solutions-create.co.jp/column/technology/generative-ai-prompt.html",
+     "title": "生成AIのプロンプトの書き方を徹底解説 — 日立ソリューションズ・クリエイト",
+     "type": "guide",
+     "what_it_gave": "Enterprise-vendor prompt guidance using いい感じに → 100文字程度で as the canonical fix."
+    },
+    {
+     "url": "https://www.sobal.co.jp/mpweb/2022/04/18/how-to-improve-your-writing/",
+     "title": "わかりにくい紛らわしい表現とは — ソーバル株式会社",
+     "type": "styleguide",
+     "what_it_gave": "BOUNDARY CASE: its あいまいな表現 section is about STRUCTURAL ambiguity (AまたはBとC), not vague vocabulary."
+    },
+    {
+     "url": "https://www.navigate-inc.co.jp/manual/tips/21_0404.html",
+     "title": "業務マニュアルの記述に注意 — ナビゲート",
+     "type": "styleguide",
+     "what_it_gave": "Same boundary finding: vague timing comes from underspecified process nouns, not adverbs."
+    },
+    {
+     "url": "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+     "title": "JTF日本語標準スタイルガイド（翻訳用）— 日本翻訳連盟",
+     "type": "styleguide",
+     "what_it_gave": "NEGATIVE RESULT — checked deliberately and re-verified 2026-08-11 against 第4.0版 (2026-07-25). Table of contents is 基本文型／文字の表記／記号の表記／単位の表記／分野別の傾向 only. 「曖昧」 appears exactly once, and about orthographic ambiguity (行って = おこなって or いって), not vague vocabulary. Do not cite JTF as authority for this rule."
+    }
+   ]
+  },
+  "cushion_words": {
+   "label_ja": "クッション言葉",
+   "description": "Politeness padding at the head of a request. Detected so it can be discounted when measuring prompt specificity.",
+   "entry_count": 68,
+   "action_key": {
+    "strip": "True zero-information padding. Safe to discount entirely when scoring specificity.",
+    "flag": "Encodes a real constraint (grants an out, waives urgency). Discounting it silently upgrades a soft ask to a hard one.",
+    "keep": "Not padding at all — asserts a fact. Removing it deletes information."
+   },
+   "matching_notes": [
+    "Cushions STACK, and the Japanese sources treat stacking as the defect rather than any individual phrase. Oggi prescribes 1文に1つのクッション言葉. A prompt head can carry three in a row (お忙しいところ + 大変恐縮ではございますが + お手数をおかけしますが). Match greedily and repeatedly from position 0, not once.",
+    "Trailing connective is highly variable and must be optional: が / ですが / ではございますが / のですが / なのですが / ますが / けれど — and several forms appear bare with no が at all (あいにく, 残念ながら, 僭越ながら, おかげさまで, 念のため).",
+    "Intensifier prefix is a free slot: 大変 / たいへん / 誠に / まことに / 重ね重ね / たびたび / もし / もしも.",
+    "Orthography genuinely varies in published business copy: お手隙／お手すき, ご面倒をおかけ／ご面倒をお掛け, 僭越ながら／せんえつながら, よろしければ／宜しければ, ご多忙／御多忙, 申し上げにくい／申しあげにくい, お伺い／おうかがい, 添えず／沿えず. Normalize first.",
+    "Pure-hiragana renderings of the noun (e.g. おてすう) did NOT appear in any source consulted. Do not assume they occur.",
+    "Several phrases the guides file as クッション言葉 are full clauses, not adverbials (お尋ねしてもよろしいでしょうか, お伺いしたいことがあるのですが). A pattern keyed only on 〜が heads will miss them."
+   ],
+   "entries": [
+    {
+     "expression": "お手数ですが",
+     "variants": [
+      "お手数をおかけしますが",
+      "お手数をおかけいたしますが",
+      "お手数ではございますが",
+      "お手数ではありますが",
+      "お手数をおかけし恐れ入りますが",
+      "お手数をおかけし大変恐縮ですが",
+      "重ね重ねお手数をおかけ致しますが",
+      "お手数おかけしますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "Reading is おてすう in business; おてかず is reserved for go/shogi move counts.",
+     "disagreement": "oggi calls お手数ですが proper 敬語 but says お手数をおかけいたしますが is more polite for 目上; y-aoyama treats お手数をおかけしますが as the 本来の形 and お手数ですが as the shortened variant.",
+     "sources": [
+      "https://oggi.jp/6315544",
+      "https://www.y-aoyama.jp/unicari/manners/7051/",
+      "https://biz.trans-suite.jp/13905",
+      "https://www.maildealer.jp/column/point/cushion.php"
+     ]
+    },
+    {
+     "expression": "恐れ入りますが",
+     "variants": [
+      "大変恐れ入りますが",
+      "誠に恐れ入りますが",
+      "恐れ入ります",
+      "お忙しいところ恐れ入りますが",
+      "たびたび恐れ入りますが",
+      "度々のご連絡で恐れ入りますが",
+      "直前に恐れ入りますが",
+      "こちらの都合で恐れ入りますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "The single most universal request cushion; appears in essentially every list consulted.",
+     "disagreement": "precious.jp says 恐縮ですが carries stronger 申し訳なさ and is more written/formal; mynavi treats them as freely interchangeable.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://precious.jp/articles/-/33367",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "恐縮ですが",
+     "variants": [
+      "大変恐縮ですが",
+      "大変恐縮ではございますが",
+      "大変恐縮でございますが",
+      "誠に恐縮ですが",
+      "たいへん恐縮なのですが",
+      "私事で恐縮ですが",
+      "恐縮至極ではございますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "disagreement": "Indeed flags 恐縮に存じます as 二重敬語 and says 恐縮ですが must NOT be used for real apologies; it also warns heavy use reads as 慇懃無礼. NOTE: the 二重敬語 verdict rests only on a commercial 敬語 page — the official 文化庁 敬語の指針 PDF was fetched and surfaced no 二重敬語 section, so treat that claim as unconfirmed by primary authority.",
+     "sources": [
+      "https://jp.indeed.com/career-advice/career-development/how-use-kyoushukudesuga-explained-example-sentences",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "お忙しいところ恐縮ですが",
+     "variants": [
+      "お忙しいところ恐れ入りますが",
+      "お忙しいところ大変恐縮ですが",
+      "お忙しい中恐れ入りますが",
+      "お忙しい折恐縮ではございますが",
+      "お忙しいところ申し訳ありませんが",
+      "お忙しいところ申し訳ございませんが",
+      "お忙しい中、申し訳ありませんが",
+      "お忙しいところお手数ですが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "The clearest evidence in the whole list that these carry no propositional content: mynavi states outright it is used 社交辞令 regardless of whether the recipient is actually busy.",
+     "disagreement": "Core cushion-vs-前置き case. mynavi calls it a クッション and 社交辞令; manabitimes classes it as a 言い換え of the 前置き ご多忙とは存じますが.",
+     "sources": [
+      "https://news.mynavi.jp/article/20220714-2387292/",
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://manabitimes.jp/language/4009",
+      "https://www.ricoh.co.jp/magazines/back-office/column/call-center/"
+     ]
+    },
+    {
+     "expression": "ご多忙のところ",
+     "variants": [
+      "ご多忙とは存じますが",
+      "ご多忙中とは存じますが",
+      "ご多忙の折",
+      "ご多忙の折ではございますが",
+      "ご多忙にもかかわらず",
+      "ご多忙中にもかかわらず",
+      "ご多忙の中",
+      "ご多忙のところ申し訳ございませんが",
+      "御多忙と存じますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "御 kanji form 御多忙 appears in the wild alongside ご多忙.",
+     "disagreement": "eigobu and Forbes say 忙 is a 忌み言葉 for celebratory contexts and ご多用 must be substituted; eigobu also splits the senses while other guides treat them as interchangeable.",
+     "sources": [
+      "https://eigobu.jp/magazine/gotabou",
+      "https://manabitimes.jp/language/4009",
+      "https://forbesjapan.com/articles/detail/73351",
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "ご多用のところ",
+     "variants": [
+      "ご多用中とは存じますが",
+      "ご多用の折",
+      "ご多用中",
+      "ご多用のところ恐れ入りますが",
+      "ご多用のところ恐縮です",
+      "ご多用の折お手数をおかけいたしますが",
+      "ご多用のところとは存じますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "The 忌み言葉-safe substitute for ご多忙.",
+     "sources": [
+      "https://forbesjapan.com/articles/detail/73351",
+      "https://news.mynavi.jp/article/20220714-2387292/",
+      "https://oggi.jp/6315544",
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "差し支えなければ",
+     "variants": [
+      "もし差し支えなければ",
+      "もしも差し支えなければ",
+      "差し支えございませんでしたら"
+     ],
+     "category": "質問",
+     "action": "flag",
+     "note": "Not pure padding — it grants the recipient an explicit out, so discounting it changes the request's force.",
+     "disagreement": "oggi says explicitly do NOT use it 確実に対応してもらわなければ困る場面 and never with an imperative; yet nearly every list files it as a plain 依頼 cushion with no such condition.",
+     "sources": [
+      "https://oggi.jp/6710956",
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "よろしければ",
+     "variants": [
+      "もしよろしければ",
+      "宜しければ",
+      "よろしかったら",
+      "ご都合よろしければ",
+      "よければ",
+      "よかったら",
+      "もしよかったら"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "note": "宜しければ is the kanji orthography; eigobu says it is 丁寧表現, not strictly 敬語.",
+     "disagreement": "eigobu notes よろしければご検討ください does NOT actually mean the action is optional — it means ぜひ検討してほしい. The literal optionality is often fake, so this is genuinely ambiguous and deserves a flag rather than a rule.",
+     "sources": [
+      "https://eigobu.jp/magazine/yoroshikereba",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html",
+      "https://keysession.jp/media/cushion-words/"
+     ]
+    },
+    {
+     "expression": "ご都合がよろしければ",
+     "variants": [
+      "ご都合のよろしい時に",
+      "ご都合の良い時に",
+      "ご都合がよろしい際に"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/",
+      "https://townwork.net/magazine/knowhow/manners/baito_manners/200212/"
+     ]
+    },
+    {
+     "expression": "可能であれば",
+     "variants": [
+      "もし可能であれば",
+      "もしも可能であれば",
+      "もし可能でしたら",
+      "可能でしたら"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "note": "Same optionality caveat as 差し支えなければ — mynavi warns it invites refusal on mandatory items.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://ikusa.jp/column/2330/"
+     ]
+    },
+    {
+     "expression": "お手隙の際に",
+     "variants": [
+      "お手すきの際に",
+      "お手すきの際で構いませんので",
+      "お手すきでしたら",
+      "お手すきでしょうか",
+      "お手すきの際",
+      "お手隙"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "note": "Kanji 手隙 and hiragana 手すき both attested. Encodes 'no urgency', which is real scheduling information.",
+     "disagreement": "townwork says it is mannerly and usable to 目上, but adds it can read as 失礼 if the recipient is visibly swamped. Several source titles frame it as a question (上司に使うと失礼？), so usage is contested.",
+     "sources": [
+      "https://townwork.net/magazine/knowhow/manners/baito_manners/200212/",
+      "https://forbesjapan.com/articles/detail/71497",
+      "https://news.mynavi.jp/article/20230322-2599290/"
+     ]
+    },
+    {
+     "expression": "ご面倒でなければ",
+     "variants": [
+      "もしそちらがご面倒でなければ",
+      "ご面倒かとは存じますが",
+      "ご面倒とは存じますが",
+      "お手間でなければ"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://4cs-i.com/blog/newscolumns/business-manners-cushion/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "ご面倒をおかけしますが",
+     "variants": [
+      "ご面倒をおかけいたしますが",
+      "ご面倒をお掛けしますが",
+      "ご面倒をおかけして"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "お掛け kanji orthography attested alongside おかけ.",
+     "sources": [
+      "https://forbesjapan.com/articles/detail/74322",
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "ご迷惑をおかけしますが",
+     "variants": [
+      "ご迷惑をおかけいたしますが",
+      "ご迷惑とは存じますが",
+      "ご迷惑をおかけいたしまして",
+      "たびたびご迷惑をお掛けし"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "disagreement": "biz.trans-suite warns it needs care because it presupposes actual 迷惑 and pairs with apology; business-textbooks files ご迷惑をおかけして under 謝罪, not 依頼.",
+     "sources": [
+      "https://biz.trans-suite.jp/13905",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://business-textbooks.com/cushion-words/",
+      "https://denwadaikou.jp/column/blog/001277/"
+     ]
+    },
+    {
+     "expression": "ご迷惑でなければ",
+     "variants": [
+      "もしご迷惑でなければ",
+      "そちらがご迷惑でなければ"
+     ],
+     "category": "質問",
+     "action": "flag",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/",
+      "https://www.ricoh.co.jp/magazines/back-office/column/call-center/"
+     ]
+    },
+    {
+     "expression": "ご足労をおかけしますが",
+     "variants": [
+      "ご足労をおかけいたしますが",
+      "ご足労おかけして申し訳ございませんが",
+      "ご足労おかけして大変申し訳ございませんが",
+      "ご足労をおかけし恐縮ですが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Carries real content — presupposes the recipient must physically travel.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://4cs-i.com/blog/newscolumns/business-manners-cushion/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://biz.trans-suite.jp/13905"
+     ]
+    },
+    {
+     "expression": "申し訳ございませんが",
+     "variants": [
+      "申し訳ありませんが",
+      "大変申し訳ございませんが",
+      "大変申し訳ありませんが",
+      "誠に申し訳ございませんが",
+      "たいへん申し訳ございませんが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "disagreement": "izul warns that using it where no apology is warranted causes 違和感; ikusa singles out repeated 申し訳ありませんが as the worst overuse offender. Most lists file it under 断り, some under 依頼.",
+     "sources": [
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.y-aoyama.jp/unicari/manners/7051/"
+     ]
+    },
+    {
+     "expression": "お手間をとらせますが",
+     "variants": [
+      "お手間を取らせてしまい恐れ入りますが",
+      "お手間でなければ",
+      "お手をわずらわせますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://oggi.jp/6315544",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "勝手を申しますが",
+     "variants": [
+      "勝手を申しまして大変恐縮ですが",
+      "勝手ながら",
+      "誠に勝手ながら",
+      "誠に勝手ではございますが",
+      "勝手とは存じますが",
+      "勝手な都合を申し上げて恐縮なのですが",
+      "誠に勝手なお願いですが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://biz.trans-suite.jp/1368",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "こちらの都合で恐れ入りますが",
+     "variants": [
+      "こちらの都合により恐れ入りますが",
+      "こちらの都合ばかりで恐れ入りますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/",
+      "https://news.mynavi.jp/article/20230322-2599290/"
+     ]
+    },
+    {
+     "expression": "重ねてのお願いで恐縮ですが",
+     "variants": [
+      "重ね重ね恐縮ですが",
+      "重ね重ねお手数をおかけ致しますが",
+      "重ね重ね大変申し訳ございませんが",
+      "お願いばかりで恐縮ですが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Weakly informative — signals this is a repeat ask.",
+     "sources": [
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.maildealer.jp/column/point/cushion.php"
+     ]
+    },
+    {
+     "expression": "たびたび申し訳ございませんが",
+     "variants": [
+      "たびたび恐れ入りますが",
+      "度々のご連絡で恐れ入りますが",
+      "たびたびご迷惑をお掛けし",
+      "度々申し訳ございませんが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Marks a repeat ask — same reason as 重ねてのお願い.",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "催促がましく恐縮ですが",
+     "variants": [
+      "催促がましくて恐縮ですが",
+      "催促するようで恐縮ですが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Rare elsewhere; sourced from a 催促-specific list.",
+     "sources": [
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "お急ぎのところ申し訳ありませんが",
+     "variants": [
+      "お急ぎのところ申し訳ございません",
+      "お急ぎのところ恐れ入りますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://4cs-i.com/blog/newscolumns/business-manners-cushion/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "急なお願いで恐れ入りますが",
+     "variants": [
+      "直前に恐れ入りますが",
+      "急なご連絡で恐れ入りますが",
+      "急な〜ですが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "4cs-i gives the productive template 急な〜ですが rather than one fixed string. Signals urgency, so not pure padding.",
+     "sources": [
+      "https://4cs-i.com/blog/newscolumns/business-manners-cushion/"
+     ]
+    },
+    {
+     "expression": "厚かましいお願いですが",
+     "variants": [
+      "厚かましい〜ですが",
+      "厚かましいとは存じますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://4cs-i.com/blog/newscolumns/business-manners-cushion/"
+     ]
+    },
+    {
+     "expression": "ぶしつけなお願いですが",
+     "variants": [
+      "不躾ながら",
+      "ぶしつけな質問で恐れ入りますが",
+      "不躾なお願いですが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "note": "Kanji 不躾 and hiragana ぶしつけ both attested.",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "お時間がありましたら",
+     "variants": [
+      "お時間がある時に",
+      "お時間のある時に",
+      "お時間のあるときに",
+      "お時間が許せば",
+      "もし余裕がありましたら"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "note": "Waives urgency — real scheduling information.",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://ikusa.jp/column/2330/",
+      "https://townwork.net/magazine/knowhow/manners/baito_manners/200212/",
+      "https://forbesjapan.com/articles/detail/71497"
+     ]
+    },
+    {
+     "expression": "ご無理のない範囲で",
+     "variants": [
+      "ご無理のない範囲でご対応いただければ"
+     ],
+     "category": "依頼",
+     "action": "flag",
+     "sources": [
+      "https://townwork.net/magazine/knowhow/manners/baito_manners/200212/"
+     ]
+    },
+    {
+     "expression": "説明不足で恐縮ですが",
+     "variants": [
+      "私共の説明不足で恐縮なのですが",
+      "私共の説明不足で申し訳ございませんが",
+      "私どもの説明不足だったかもしれませんが",
+      "説明が足りず恐縮ですが",
+      "説明が足りず失礼いたしました",
+      "説明が十分ではなかったかもしれませんが"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Asserts a fact — that a prior explanation was inadequate.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "言葉足らずで申し訳ありませんが",
+     "variants": [
+      "言葉足らずで恐縮なのですが",
+      "言葉が足りなかったかもしれませんが",
+      "言葉足らずで失礼いたしました"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "細かいことを申し上げて恐縮ですが",
+     "variants": [
+      "細かなことを申し上げて恐縮ですが",
+      "細かいことを言ってしまい恐縮ですが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "突然ではございますが",
+     "variants": [
+      "突然のご連絡失礼いたしますが",
+      "突然ですが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "disagreement": "biz.trans-suite lists it among クッション言葉, but it functions as a mail-opening 前置き rather than a request softener.",
+     "sources": [
+      "https://biz.trans-suite.jp/1368"
+     ]
+    },
+    {
+     "expression": "早速ですが",
+     "variants": [
+      "さっそくですが",
+      "早速でございますが"
+     ],
+     "category": "依頼",
+     "action": "strip",
+     "disagreement": "business-textbooks files it as クッション言葉 (その他); it is arguably a topic-shift marker, not a politeness cushion.",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://biz.trans-suite.jp/1368"
+     ]
+    },
+    {
+     "expression": "念のため",
+     "variants": [
+      "念のため伺いたいのですが",
+      "念のため確認させていただきたいのですが",
+      "念のためご連絡いたしますが",
+      "念のためご確認いただけますと幸いです"
+     ],
+     "category": "質問",
+     "action": "flag",
+     "note": "Semi-informative — signals redundancy/low stakes rather than pure politeness. Appears bare with no が.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://oggi.jp/7532298",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "お力になれることがあれば",
+     "variants": [
+      "私でお力になれることがあれば",
+      "私にできることがあれば",
+      "もし私にできることがあれば"
+     ],
+     "category": "依頼",
+     "action": "keep",
+     "note": "Offer-of-help cushion (援助の申し出), not a request head.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "失礼ですが",
+     "variants": [
+      "大変失礼ですが",
+      "失礼とは存じますが",
+      "失礼ながら",
+      "失礼いたしますが"
+     ],
+     "category": "質問",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.maildealer.jp/column/point/cushion.php"
+     ]
+    },
+    {
+     "expression": "つかぬことをお伺いしますが",
+     "variants": [
+      "つかぬことを伺いますが",
+      "つかぬことをお尋ねしますが"
+     ],
+     "category": "質問",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "立ち入ったことを伺いますが",
+     "variants": [
+      "立ち入ったことをお尋ねしますが",
+      "立ち入ったことを伺うようですが",
+      "立ち入ったことをお伺いしますが"
+     ],
+     "category": "質問",
+     "action": "strip",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "お尋ねしてもよろしいでしょうか",
+     "variants": [
+      "お尋ねしてよろしいでしょうか",
+      "少しお尋ねしたいのですが",
+      "お尋ねしたいのですが"
+     ],
+     "category": "質問",
+     "action": "strip",
+     "disagreement": "Listed as a クッション言葉 by mynavi/ikusa/domani, but it is a full permission-request clause rather than an adverbial cushion — a linter matching only 〜が heads will miss it.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://domani.shogakukan.co.jp/905295",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "お伺いしたいことがあるのですが",
+     "variants": [
+      "おうかがいしたいことがあるのですが",
+      "お伺いしたいのですが",
+      "お伺いしたいことがございまして"
+     ],
+     "category": "質問",
+     "action": "strip",
+     "note": "Hiragana おうかがい attested.",
+     "sources": [
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://ikusa.jp/column/2330/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "お時間が許せば",
+     "variants": [
+      "お時間が許しましたら"
+     ],
+     "category": "質問",
+     "action": "flag",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "あいにくですが",
+     "variants": [
+      "あいにく",
+      "あいにくではございますが",
+      "生憎ですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "note": "Appears bare with no が.",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "せっかくですが",
+     "variants": [
+      "せっかくではございますが",
+      "せっかくでございますが",
+      "せっかくのお申し出ですが",
+      "せっかくの申し出ではございますが",
+      "せっかくお声がけいただいたのですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "残念ながら",
+     "variants": [
+      "残念ですが",
+      "誠に残念ながら",
+      "残念ではございますが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "note": "Appears bare with no が.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://keysession.jp/media/cushion-words/"
+     ]
+    },
+    {
+     "expression": "ご期待に添えず申し訳ありませんが",
+     "variants": [
+      "ご期待に添えず恐縮ですが",
+      "ご期待に添えず恐縮ではございますが",
+      "ご期待に添えず大変申し訳ございませんが",
+      "ご期待に添えず",
+      "ご希望に添えず",
+      "ご意向に沿えず申し訳ありませんが",
+      "ご要望に添えず申し訳ありませんが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "note": "添える／沿える orthography varies across sources.",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.ricoh.co.jp/magazines/back-office/column/call-center/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "心苦しいのですが",
+     "variants": [
+      "心苦しい限りではございますが",
+      "心苦しいことではございますが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.maildealer.jp/column/point/cushion.php"
+     ]
+    },
+    {
+     "expression": "申し上げにくいのですが",
+     "variants": [
+      "大変申し上げにくいのですが",
+      "誠に申し上げにくいのですが",
+      "誠に申しあげにくいのですが",
+      "大変申し上げにくいことですが",
+      "言いづらいのですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "note": "申しあげ／申し上げ 送り仮名 varies.",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://www.ricoh.co.jp/magazines/back-office/column/call-center/"
+     ]
+    },
+    {
+     "expression": "お気持ちはありがたいのですが",
+     "variants": [
+      "お気持ちは分かりますが",
+      "お気持ちはとてもよくわかるのですが",
+      "大変ありがたいお話なのですが",
+      "ありがたいお話ですが",
+      "大変ありがたいのですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "身に余るお話ですが",
+     "variants": [
+      "身に余るお話ではございますが",
+      "身にあまるお話ですが",
+      "身に余るお言葉ですが",
+      "身に余るお話、光栄なのですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "お役に立ちたいのですが",
+     "variants": [
+      "お役に立ちたいのは山々ですが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/"
+     ]
+    },
+    {
+     "expression": "私どもの力不足で",
+     "variants": [
+      "私どもの力不足により",
+      "私どもの力不足で、たいへん恐縮なのですが",
+      "私どもの力不足で申し訳ございませんが"
+     ],
+     "category": "断り",
+     "action": "strip",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "差し出がましいようですが",
+     "variants": [
+      "差し出がましいとは存じますが",
+      "差し出がましいようで恐縮ですが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "note": "oggi recommends this (with 僭越ながら) as the 目上-safe replacement for 老婆心ながら.",
+     "sources": [
+      "https://oggi.jp/6741543",
+      "https://ikusa.jp/column/2330/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "お言葉を返すようですが",
+     "variants": [
+      "お言葉を返すようで恐縮ですが",
+      "お言葉を返すようで恐縮なのですが",
+      "お言葉ではございますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "僭越ながら",
+     "variants": [
+      "僭越ではございますが",
+      "せんえつながら",
+      "僭越とは存じますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "note": "Hiragana せんえつながら attested. Appears bare with no が.",
+     "sources": [
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://mail-sakusei.com/guide/kushion-kotoba",
+      "https://oggi.jp/6741543",
+      "https://jp.indeed.com/career-advice/career-development/how-use-kyoushukudesuga-explained-example-sentences"
+     ]
+    },
+    {
+     "expression": "出過ぎたことを申しますが",
+     "variants": [
+      "出過ぎたことを言うようですが",
+      "出過ぎたことを申し上げますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://ikusa.jp/column/2330/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "失礼を承知で申し上げますが",
+     "variants": [
+      "無礼を承知で申しあげますが",
+      "ご無礼を承知のうえで",
+      "失礼を承知で申しますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://news.mynavi.jp/article/20230322-2599290/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://biz.trans-suite.jp/1368",
+      "https://precious.jp/articles/-/33367"
+     ]
+    },
+    {
+     "expression": "余計なこととは存じますが",
+     "variants": [
+      "余計なこととは思いますが",
+      "余計なお世話とは存じますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://allabout.co.jp/gm/gc/472076/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "私の考えすぎかもしれませんが",
+     "variants": [
+      "私の考え過ぎかもしれませんが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://bizisuke.jp/hint/20210112_3022/"
+     ]
+    },
+    {
+     "expression": "見解が分かれる点かと存じますが",
+     "variants": [
+      "見解の分かれるところかと存じますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/"
+     ]
+    },
+    {
+     "expression": "おっしゃる通りですが",
+     "variants": [
+      "確かにおっしゃるとおりですが",
+      "確かに、おっしゃることはごもっともなのですが",
+      "おっしゃることはわかりますが",
+      "おっしゃることは重々承知しておりますが",
+      "おっしゃることは重々理解しておりますが",
+      "おっしゃる通りかと存じますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "sources": [
+      "https://ikusa.jp/column/2330/",
+      "https://izul.co.jp/media/business-skill/cushion-statement/",
+      "https://business-textbooks.com/cushion-words/",
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html"
+     ]
+    },
+    {
+     "expression": "老婆心ながら",
+     "variants": [
+      "老婆心ながら言わせてもらえば",
+      "老婆心から申し上げますが"
+     ],
+     "category": "反論",
+     "action": "strip",
+     "disagreement": "business-textbooks lists it as a standard 異論 cushion, but oggi says using it to 目上 reads as talking down and recommends 僭越ながら／差し出がましいようですが instead.",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://oggi.jp/6741543"
+     ]
+    },
+    {
+     "expression": "私見ではございますが",
+     "variants": [
+      "私見ですが",
+      "あくまで私見ですが"
+     ],
+     "category": "反論",
+     "action": "keep",
+     "note": "Marks the following claim as opinion rather than fact — that is information.",
+     "sources": [
+      "https://mail-sakusei.com/guide/kushion-kotoba"
+     ]
+    },
+    {
+     "expression": "ご不便をおかけしますが",
+     "variants": [
+      "ご不便をおかけいたしまして",
+      "ご不便をおかけいたしますが"
+     ],
+     "category": "謝罪",
+     "action": "strip",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/",
+      "https://denwadaikou.jp/column/blog/001277/"
+     ]
+    },
+    {
+     "expression": "お待たせして",
+     "variants": [
+      "お待たせいたしまして",
+      "お待たせしておりますが"
+     ],
+     "category": "謝罪",
+     "action": "strip",
+     "sources": [
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "お取り込み中のところ失礼いたします",
+     "variants": [
+      "お話中に恐縮ですが",
+      "お仕事中に恐れ入りますが",
+      "お食事中に恐れ入りますが",
+      "ご歓談中に恐れ入りますが"
+     ],
+     "category": "謝罪",
+     "action": "strip",
+     "note": "Interruption cushions. insource gives ご歓談中／お仕事中／お食事中 as a productive slot.",
+     "sources": [
+      "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "おかげさまで",
+     "variants": [
+      "お陰様で"
+     ],
+     "category": "その他",
+     "action": "strip",
+     "note": "Reporting/gratitude cushion, not a request head — zero task information but appears sentence-initially. Bare, no が.",
+     "sources": [
+      "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    },
+    {
+     "expression": "ご心配かもしれませんが",
+     "variants": [
+      "ご心配をおかけしておりますが"
+     ],
+     "category": "その他",
+     "action": "strip",
+     "sources": [
+      "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+      "https://business-textbooks.com/cushion-words/"
+     ]
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://business-textbooks.com/cushion-words/",
+     "title": "メールや電話対応・営業・接客で使えるクッション言葉72選 — 社会人の教科書",
+     "type": "manner",
+     "what_it_gave": "Largest single haul — 72 phrases across 断り/質問/依頼/異論/感謝報告/謝罪/重ね謝罪/その他."
+    },
+    {
+     "url": "https://news.mynavi.jp/article/20230322-2599290/",
+     "title": "クッション言葉とは? 場面別の一覧や例文、注意点 — マイナビニュース",
+     "type": "media",
+     "what_it_gave": "Six-category list plus overuse warnings and the 'don't use よろしければ for mandatory items' caveat."
+    },
+    {
+     "url": "https://news.mynavi.jp/article/20220714-2387292/",
+     "title": "「お忙しいところ恐縮ですが」とは? — マイナビニュース",
+     "type": "keigo",
+     "what_it_gave": "The 社交辞令 finding — used regardless of whether the recipient is actually busy."
+    },
+    {
+     "url": "https://mail-sakusei.com/guide/kushion-kotoba",
+     "title": "クッション言葉一覧40選 — ビジネス文書AI",
+     "type": "template",
+     "what_it_gave": "Six-category numbered list including 催促 cushions rare elsewhere."
+    },
+    {
+     "url": "https://ikusa.jp/column/2330/",
+     "title": "クッション言葉とは？役立つ場面別に一覧で紹介 — IKUSA",
+     "type": "training",
+     "what_it_gave": "反論 depth and the 申し訳ありませんが 連続使用 overuse warning."
+    },
+    {
+     "url": "https://bizisuke.jp/hint/20210112_3022/",
+     "title": "ビジネスで使える場面別のクッション言葉 — ビジ助channel",
+     "type": "corporate",
+     "what_it_gave": "Richest 場面 granularity — separate buckets for 確実に聞きたいとき, 改善・修正してほしいとき."
+    },
+    {
+     "url": "https://www.insource.co.jp/gam-batte/cs/article/service_cs_up57.html",
+     "title": "【使えるワンフレーズ集①】「クッション言葉」を習得する — インソース",
+     "type": "training",
+     "what_it_gave": "Training-company list; interruption cushions and hiragana たいへん恐縮なのですが."
+    },
+    {
+     "url": "https://allabout.co.jp/gm/gc/472076/",
+     "title": "クッション言葉とは？ — All About",
+     "type": "manner",
+     "what_it_gave": "勝手を申しますが, つかぬことをお伺いしますが, hiragana せんえつながら."
+    },
+    {
+     "url": "https://callnavi.jp/contents/skills_qualifications/cushion_example/",
+     "title": "クッション言葉の一覧と会話例 — コールナビ",
+     "type": "callcenter",
+     "what_it_gave": "Spoken-channel cushions incl. おかげさまで under 説明・報告."
+    },
+    {
+     "url": "https://izul.co.jp/media/business-skill/cushion-statement/",
+     "title": "クッション言葉とは？具体例や注意点 — izul",
+     "type": "media",
+     "what_it_gave": "Warns overuse reads 機械的/マニュアル的 and that 申し訳ございませんが in no-apology contexts causes 違和感."
+    },
+    {
+     "url": "https://keysession.jp/media/cushion-words/",
+     "title": "クッション言葉とは — KeySessionメディア",
+     "type": "training",
+     "what_it_gave": "The strongest anti-cushion argument found: unnecessary apology lowers your standing and damages trust."
+    },
+    {
+     "url": "https://www.maildealer.jp/column/point/cushion.php",
+     "title": "「つっけんどん！」と思われないための「クッション言葉」 — メールディーラー",
+     "type": "corporate",
+     "what_it_gave": "依頼/断り list; explicitly pro-cushion with no overuse critique."
+    },
+    {
+     "url": "https://www.ricoh.co.jp/magazines/back-office/column/call-center/",
+     "title": "コールセンター応対は「クッション言葉」が鍵 — リコー",
+     "type": "corporate",
+     "what_it_gave": "Corporate-published four-category list."
+    },
+    {
+     "url": "https://domani.shogakukan.co.jp/905295",
+     "title": "「クッション言葉」とは？ — Domani（小学館）",
+     "type": "media",
+     "what_it_gave": "The 定型文化して気持ちが込もっていない overuse warning."
+    },
+    {
+     "url": "https://oggi.jp/6315544",
+     "title": "「お手数ですが」の意味、使い方は？ — Oggi.jp",
+     "type": "keigo",
+     "what_it_gave": "お手数 variants and the stacking pattern お忙しいところお手数ですが."
+    },
+    {
+     "url": "https://oggi.jp/6710956",
+     "title": "「差し支えなければ」の正しい使い方 — Oggi.jp",
+     "type": "keigo",
+     "what_it_gave": "Key constraint: do NOT use it when compliance is required, and never with an imperative."
+    },
+    {
+     "url": "https://oggi.jp/6741543",
+     "title": "「老婆心ながら」は失礼？ — Oggi.jp",
+     "type": "keigo",
+     "what_it_gave": "老婆心ながら reads as condescending to superiors."
+    },
+    {
+     "url": "https://oggi.jp/7532298",
+     "title": "印象が変わるクッション言葉の使い方＆例文集 — Oggi.jp",
+     "type": "keigo",
+     "what_it_gave": "The 1文に1つのクッション言葉 rule — the basis for treating stacking as the defect."
+    },
+    {
+     "url": "https://jp.indeed.com/career-advice/career-development/how-use-kyoushukudesuga-explained-example-sentences",
+     "title": "「恐縮ですが」の意味や正しい使い方 — Indeed",
+     "type": "career",
+     "what_it_gave": "恐縮に存じます flagged as 二重敬語; overuse → 慇懃無礼."
+    },
+    {
+     "url": "https://precious.jp/articles/-/33367",
+     "title": "「恐れ入りますが」の意味は？ — Precious.jp（小学館）",
+     "type": "keigo",
+     "what_it_gave": "恐縮 carries stronger 申し訳なさ than 恐れ入る — the two are not fully interchangeable."
+    },
+    {
+     "url": "https://www.y-aoyama.jp/unicari/manners/7051/",
+     "title": "「お手数をおかけしますが」の意味と使い方 — 洋服の青山",
+     "type": "manner",
+     "what_it_gave": "Treats お手数をおかけしますが as the 本来の形."
+    },
+    {
+     "url": "https://biz.trans-suite.jp/13905",
+     "title": "「お手数」の意味と使い方 — TRANS.Biz",
+     "type": "dictionary",
+     "what_it_gave": "Reading verdict: おてすう standard in business, おてかず for go/shogi."
+    },
+    {
+     "url": "https://biz.trans-suite.jp/1368",
+     "title": "「誠に勝手ながら」の意味や使い方 — TRANS.Biz",
+     "type": "dictionary",
+     "what_it_gave": "勝手 family plus 突然ではございますが／早速ですが."
+    },
+    {
+     "url": "https://eigobu.jp/magazine/yoroshikereba",
+     "title": "「よろしければ」は正しい敬語？ — eigobu",
+     "type": "keigo",
+     "what_it_gave": "宜しければ kanji form; its optionality is often nominal."
+    },
+    {
+     "url": "https://eigobu.jp/magazine/gotabou",
+     "title": "「ご多忙」の意味とビジネスメールの使い方 — eigobu",
+     "type": "keigo",
+     "what_it_gave": "Full ご多忙 slot inventory and the 忌み言葉 rule pushing ご多用."
+    },
+    {
+     "url": "https://manabitimes.jp/language/4009",
+     "title": "「ご多忙とは存じますが」の意味や言い換え",
+     "type": "thesaurus",
+     "what_it_gave": "ご多忙中とは存じますが／お忙しい折; warns overuse becomes 形式的."
+    },
+    {
+     "url": "https://forbesjapan.com/articles/detail/73351",
+     "title": "「ご多用のところ」の意味とは？ — Forbes JAPAN",
+     "type": "media",
+     "what_it_gave": "ご多用 variants and the ご多忙-is-negative-at-weddings distinction."
+    },
+    {
+     "url": "https://forbesjapan.com/articles/detail/74322",
+     "title": "「ご面倒をおかけしますが」の意味とは？ — Forbes JAPAN",
+     "type": "media",
+     "what_it_gave": "ご面倒 family; cautions repetition feels formulaic."
+    },
+    {
+     "url": "https://forbesjapan.com/articles/detail/71497",
+     "title": "「お手隙の際に」の正しい使い方 — Forbes JAPAN",
+     "type": "media",
+     "what_it_gave": "Kanji orthography お手隙 plus ご都合のよろしいときに."
+    },
+    {
+     "url": "https://townwork.net/magazine/knowhow/manners/baito_manners/200212/",
+     "title": "「お手すきの際に」は上司にも使える？失礼？ — タウンワークマガジン",
+     "type": "manner",
+     "what_it_gave": "Hiragana お手すき variants; mannerly but can misfire on genuinely busy recipients."
+    },
+    {
+     "url": "https://4cs-i.com/blog/newscolumns/business-manners-cushion/",
+     "title": "上手に依頼する クッション言葉 10選",
+     "type": "training",
+     "what_it_gave": "Request-only list with productive templates 急な〜ですが and 厚かましい〜ですが."
+    },
+    {
+     "url": "https://denwadaikou.jp/column/blog/001277/",
+     "title": "クッション言葉で電話応対の質を高めよう",
+     "type": "corporate",
+     "what_it_gave": "謝罪-side cushions ご不便をおかけいたしまして."
+    },
+    {
+     "url": "https://www.bunka.go.jp/seisaku/bunkashingikai/kokugo/hokoku/pdf/keigo_tosin.pdf",
+     "title": "敬語の指針（文化審議会答申）",
+     "type": "government",
+     "what_it_gave": "NEGATIVE RESULT — checked as primary authority. Surfaced the five-category 敬語 framework but NO section on 二重敬語 or 配慮表現/クッション言葉."
+    }
+   ],
+   "unreachable_sources": [
+    "kotoba-note.com（100選）",
+    "progress-bpo.co.jp",
+    "compass.careerlink.co.jp",
+    "lifehacker.jp page 2 — all robots.txt/403. A handful of long-tail phrases are likely missing."
+   ]
+  },
+  "task_verbs": {
+   "label_ja": "明確な依頼表現",
+   "description": "Expressions that state a clear ask — the prompt actually names an action. Presence of one of these is positive signal for the instruction-clarity subscore.",
+   "entry_count": 64,
+   "matching_notes": [
+    "The ください／下さい split is the single biggest practical issue. JTF日本語標準スタイルガイド mandates hiragana ください for the auxiliary verb, but the OFFICIAL prompt examples published by 東京都 and 千葉県 use 「要約して下さい」「表に整理して下さい」 in kanji. The linter must match both.",
+    "「〜こと」体言止め (解説をつけること) is a Japanese-specific instruction form used in constraint sections. English prompt-engineering lists have no counterpart, so nothing imported would cover it.",
+    "Match on POS, not raw string, where possible: 要約 as a bare noun in running text should not fire; 要約する／要約して in predicate position should. See textlint-rule-morpheme-match in the D2 report for MIT-licensed tooling that does this."
+   ],
+   "entries": [
+    {
+     "expression": "作成",
+     "variants": [
+      "作成して",
+      "作成してください",
+      "作成をお願いします",
+      "作成せよ",
+      "作成すること",
+      "作る",
+      "作って",
+      "作ってください",
+      "つくって",
+      "作製",
+      "制作",
+      "製作",
+      "策定",
+      "起草"
+     ],
+     "note": "Most frequent. Core verb in both government guidelines and vendor docs.",
+     "disagreement": "Weblio's thesaurus treats 作成/作製/制作/製作 as synonyms, but practical style guides distinguish by object (文書=作成, 物品=作製, 創作物=制作). The distinction is unstable in the wild.",
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://thesaurus.weblio.jp/content/%E4%BD%9C%E6%88%90",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf"
+     ]
+    },
+    {
+     "expression": "生成",
+     "variants": [
+      "生成して",
+      "生成してください",
+      "生成する",
+      "生成させる",
+      "作り出して",
+      "産み出して"
+     ],
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf"
+     ]
+    },
+    {
+     "expression": "要約",
+     "variants": [
+      "要約して",
+      "要約してください",
+      "要約して下さい",
+      "要約を作成してください",
+      "要約せよ",
+      "要点をまとめて",
+      "サマリーにして",
+      "かいつまんで"
+     ],
+     "note": "東京都's official example uses 「要約して下さい」 with kanji 下さい.",
+     "disagreement": "JTF mandates hiragana ください; official government prompt examples use 下さい. Match both.",
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "まとめる",
+     "variants": [
+      "まとめて",
+      "まとめてください",
+      "まとめてもらう",
+      "取りまとめて",
+      "とりまとめ",
+      "集約して",
+      "一本化して"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://thesaurus.weblio.jp/content/%E3%81%BE%E3%81%A8%E3%82%81%E3%82%8B",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "教える",
+     "variants": [
+      "教えて",
+      "教えてください",
+      "教えて下さい",
+      "教えてほしい",
+      "おしえて",
+      "ご教示ください",
+      "ご教示いただけますでしょうか",
+      "ご教授ください",
+      "整理して教えてください"
+     ],
+     "note": "ご教示ください is the standard business 言い換え.",
+     "disagreement": "ご教授 properly means teaching a discipline over time; ビジネス one-off questions should take ご教示. In practice the two are widely mixed.",
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://precious.jp/articles/-/36207",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "説明",
+     "variants": [
+      "説明して",
+      "説明してください",
+      "説明せよ",
+      "ご説明ください",
+      "わかりやすく説明して"
+     ],
+     "sources": [
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://indepa.net/archives/6697",
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "解説",
+     "variants": [
+      "解説して",
+      "解説してください",
+      "解説をつけること",
+      "解説する文章を出力してください"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/"
+     ]
+    },
+    {
+     "expression": "抽出",
+     "variants": [
+      "抽出して",
+      "抽出してください",
+      "抽出し",
+      "取り出して",
+      "洗い出して",
+      "ぬき出して",
+      "書き出して"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "分類",
+     "variants": [
+      "分類して",
+      "分類してください",
+      "分類分けして",
+      "分けて",
+      "分けてください",
+      "グルーピングして",
+      "ジャンル別にして",
+      "ジャンル分けして",
+      "カテゴリ分けして"
+     ],
+     "sources": [
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "翻訳",
+     "variants": [
+      "翻訳して",
+      "翻訳してください",
+      "訳して",
+      "英訳して",
+      "和訳して",
+      "日本語に訳して"
+     ],
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "校正",
+     "variants": [
+      "校正して",
+      "校正してください",
+      "校正してもらう",
+      "誤字脱字をチェックして"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "推敲",
+     "variants": [
+      "推敲して",
+      "推敲してください",
+      "練り直して"
+     ],
+     "sources": [
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "添削",
+     "variants": [
+      "添削して",
+      "添削してください",
+      "てんさくして"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf"
+     ]
+    },
+    {
+     "expression": "修正",
+     "variants": [
+      "修正して",
+      "修正してください",
+      "直して",
+      "書き直して",
+      "訂正して",
+      "なおして"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://metaversesouken.com/ai/generative_ai/template/",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "書き換え",
+     "variants": [
+      "書き換えて",
+      "書き換えてください",
+      "かきかえて",
+      "リライトして",
+      "小学生でもわかるように書き換えてください"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf"
+     ]
+    },
+    {
+     "expression": "言い換え",
+     "variants": [
+      "言い換えて",
+      "言い換えてください",
+      "いいかえて",
+      "別の表現にして",
+      "パラフレーズして"
+     ],
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://precious.jp/articles/-/36207"
+     ]
+    },
+    {
+     "expression": "比較",
+     "variants": [
+      "比較して",
+      "比較してください",
+      "比較分析してください",
+      "比べて",
+      "対比して"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "分析",
+     "variants": [
+      "分析して",
+      "分析してください",
+      "解析して",
+      "比較分析して"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "提案",
+     "variants": [
+      "提案して",
+      "提案してください",
+      "提案をお願いします",
+      "提案を3つ挙げてください",
+      "ご提案ください",
+      "案を出して"
+     ],
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide"
+     ]
+    },
+    {
+     "expression": "列挙",
+     "variants": [
+      "列挙して",
+      "列挙してください",
+      "順番に列挙",
+      "れっきょして",
+      "並べて"
+     ],
+     "sources": [
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "リストアップ",
+     "variants": [
+      "リストアップして",
+      "リストアップしてください",
+      "リストして",
+      "リストにして",
+      "一覧にして"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "変換",
+     "variants": [
+      "変換して",
+      "変換してください",
+      "〜にして",
+      "〜に変えて",
+      "Pythonコードにして",
+      "JSON形式にして"
+     ],
+     "note": "The light 〜にして conversion request is very common in the wild.",
+     "sources": [
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "レビュー",
+     "variants": [
+      "レビューして",
+      "レビューしてください",
+      "チェックして",
+      "見てください"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831"
+     ]
+    },
+    {
+     "expression": "評価",
+     "variants": [
+      "評価して",
+      "評価してください",
+      "評価しその理由も記載",
+      "採点して",
+      "点数をつけて"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "検証",
+     "variants": [
+      "検証して",
+      "検証してください",
+      "確かめて",
+      "カウントしてください",
+      "条件を満たしているか確認してください"
+     ],
+     "sources": [
+      "https://www.goatman.co.jp/media/chatgpt-character-length-specification/",
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "確認",
+     "variants": [
+      "確認して",
+      "確認してください",
+      "ご確認ください",
+      "ご確認のほどお願いいたします"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://precious.jp/articles/-/36207"
+     ]
+    },
+    {
+     "expression": "調査",
+     "variants": [
+      "調べて",
+      "調べてください",
+      "調査して",
+      "調査してください",
+      "リサーチして"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831"
+     ]
+    },
+    {
+     "expression": "計算",
+     "variants": [
+      "計算して",
+      "計算してください",
+      "算出して",
+      "求めて"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831"
+     ]
+    },
+    {
+     "expression": "集計",
+     "variants": [
+      "集計して",
+      "集計してください",
+      "平均を出してください",
+      "月別に集計する",
+      "合計して"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "実装",
+     "variants": [
+      "実装して",
+      "実装してください",
+      "コードを書いてください",
+      "マクロを作成してください",
+      "スクリプトを書いて"
+     ],
+     "sources": [
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "設計",
+     "variants": [
+      "設計して",
+      "設計してください",
+      "構成を考えて",
+      "構築して"
+     ],
+     "sources": [
+      "https://thesaurus.weblio.jp/content/%E4%BD%9C%E6%88%90",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "出力",
+     "variants": [
+      "出力して",
+      "出力してください",
+      "出力せよ",
+      "〜で出力",
+      "出してください",
+      "だして"
+     ],
+     "note": "Co-occurs heavily with format_markers in the 〜形式で出力してください frame.",
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "書く",
+     "variants": [
+      "書いて",
+      "書いてください",
+      "記述してください",
+      "記してください",
+      "書き出してください",
+      "執筆して"
+     ],
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "考える",
+     "variants": [
+      "考えて",
+      "考えてください",
+      "アイデアを出して",
+      "案だしして",
+      "一緒に考えたい",
+      "構想して"
+     ],
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide"
+     ]
+    },
+    {
+     "expression": "企画",
+     "variants": [
+      "企画して",
+      "企画してください",
+      "企画案を作成して",
+      "企画書のたたき台を作ってください"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/",
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/"
+     ]
+    },
+    {
+     "expression": "立案",
+     "variants": [
+      "立案して",
+      "立案してください",
+      "プランニングして",
+      "計画して",
+      "考案して"
+     ],
+     "sources": [
+      "https://thesaurus.weblio.jp/content/%E4%BD%9C%E6%88%90"
+     ]
+    },
+    {
+     "expression": "整理",
+     "variants": [
+      "整理して",
+      "整理してください",
+      "整理して教えてください",
+      "表に整理して下さい",
+      "段階的に整理",
+      "整頓して"
+     ],
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "構造化",
+     "variants": [
+      "構造化して",
+      "構造化してください",
+      "体系的に整理して"
+     ],
+     "sources": [
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "回答",
+     "variants": [
+      "回答して",
+      "回答してください",
+      "答えて",
+      "答えてください",
+      "返答して"
+     ],
+     "sources": [
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "質問",
+     "variants": [
+      "質問して",
+      "質問してください",
+      "聞いてください",
+      "尋ねて",
+      "ヒアリングして"
+     ],
+     "note": "Frequent as a self-completion instruction: 足りない情報があれば質問してください.",
+     "sources": [
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html"
+     ]
+    },
+    {
+     "expression": "改善",
+     "variants": [
+      "改善して",
+      "改善してください",
+      "改善案を出して",
+      "良くして"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "ブラッシュアップ",
+     "variants": [
+      "ブラッシュアップして",
+      "ブラッシュアップして作成",
+      "磨き上げて"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "追加",
+     "variants": [
+      "追加して",
+      "追加してください",
+      "加えて",
+      "挿入して",
+      "列を追加してください",
+      "スライドを追加してください"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "削除",
+     "variants": [
+      "削除して",
+      "削除してください",
+      "除いて",
+      "省いて",
+      "文字を削除して"
+     ],
+     "sources": [
+      "https://www.goatman.co.jp/media/chatgpt-character-length-specification/"
+     ]
+    },
+    {
+     "expression": "検討",
+     "variants": [
+      "検討して",
+      "検討してください",
+      "ご検討ください"
+     ],
+     "note": "OVERLAP: also in vague_words as a semantically empty verb. A prompt whose only verb is 検討してください has a task verb but no observable end state.",
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://doc.dev1x.org/sweng/12/"
+     ]
+    },
+    {
+     "expression": "表示",
+     "variants": [
+      "表示して",
+      "表示してください",
+      "カラースケールで表示してください",
+      "見せて"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "膨らませる",
+     "variants": [
+      "膨らませて",
+      "膨らませてください",
+      "●●文字程度に膨らませてください",
+      "加筆して",
+      "肉付けして"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf"
+     ]
+    },
+    {
+     "expression": "補完",
+     "variants": [
+      "補完して",
+      "補完してもらう",
+      "補足して",
+      "補足を添えてください"
+     ],
+     "sources": [
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide"
+     ]
+    },
+    {
+     "expression": "引用",
+     "variants": [
+      "引用して",
+      "引用してください",
+      "出典を示して"
+     ],
+     "sources": [
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "明記",
+     "variants": [
+      "明記して",
+      "明記してください",
+      "記載して",
+      "記載する",
+      "冒頭に記載する"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "読み込む",
+     "variants": [
+      "読み込んで",
+      "読み込ませる",
+      "読み取って",
+      "読んで"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/"
+     ]
+    },
+    {
+     "expression": "編集",
+     "variants": [
+      "編集して",
+      "編集してください",
+      "整形して",
+      "整形したい"
+     ],
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/"
+     ]
+    },
+    {
+     "expression": "〜してください",
+     "variants": [
+      "してください",
+      "して下さい",
+      "してくださいませ",
+      "して頂けますよう",
+      "くださいませ"
+     ],
+     "form": "request_ending",
+     "note": "The most universal request ending.",
+     "disagreement": "JTF and TC協会 style guides mandate hiragana ください; 東京都 and 千葉県 official prompt examples use 下さい. Match both.",
+     "sources": [
+      "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf"
+     ]
+    },
+    {
+     "expression": "〜して（プレーンて形）",
+     "variants": [
+      "して",
+      "してね",
+      "してよ",
+      "教えて",
+      "作って",
+      "まとめて",
+      "出して"
+     ],
+     "form": "request_ending",
+     "note": "The shortest request form; used as freely as the polite form with generative AI.",
+     "disagreement": "Whether imperative tone (〜して/してよ) vs polite form (〜してください/お願いします) changes output quality is contested across Japanese verification articles.",
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/"
+     ]
+    },
+    {
+     "expression": "〜してほしい",
+     "variants": [
+      "してほしい",
+      "して欲しい",
+      "してほしいです",
+      "〜のときにこうしてほしい",
+      "こういう場合はこうしてほしい"
+     ],
+     "form": "request_ending",
+     "sources": [
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "〜をお願いします",
+     "variants": [
+      "お願いします",
+      "お願いいたします",
+      "お願い申し上げます",
+      "お願いしたく存じます",
+      "何卒お願いいたします",
+      "作成をお願いします",
+      "提案をお願いします"
+     ],
+     "form": "request_ending",
+     "note": "名詞＋をお願いします names the task via a noun.",
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://precious.jp/articles/-/36207"
+     ]
+    },
+    {
+     "expression": "〜していただけますか",
+     "variants": [
+      "していただけますか",
+      "していただけますでしょうか",
+      "していただけないでしょうか",
+      "いただけると幸いです",
+      "お願いできますでしょうか",
+      "していただけるとありがたいのですが",
+      "ご協力いただけますよう"
+     ],
+     "form": "request_ending",
+     "note": "Most polite group. Business-email origin, flows into prompts.",
+     "sources": [
+      "https://precious.jp/articles/-/36207"
+     ]
+    },
+    {
+     "expression": "〜してもらえますか",
+     "variants": [
+      "してもらえますか",
+      "してもらえませんか",
+      "してもらう",
+      "校正してもらった",
+      "まとめてもらう"
+     ],
+     "form": "request_ending",
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "〜せよ",
+     "variants": [
+      "せよ",
+      "しろ",
+      "しなさい",
+      "述べよ",
+      "示せ",
+      "挙げよ"
+     ],
+     "form": "request_ending",
+     "note": "常体 imperative. Used in spec-sheet style prompts.",
+     "disagreement": "Style guides list 〜せよ／〜しよう as the 常体 volitional/imperative, but the actual prompt examples in generative-AI guides are almost all 敬体, so real-world frequency is low. Retained because 指示書型 prompts do use it.",
+     "sources": [
+      "https://fereple.com/writers-apc/writing-style/"
+     ]
+    },
+    {
+     "expression": "〜すること",
+     "variants": [
+      "すること",
+      "〜のこと",
+      "抽出し解説をつけること",
+      "〜とする",
+      "〜は禁止する",
+      "守ること"
+     ],
+     "form": "constraint_ending",
+     "note": "体言止め instruction form used in constraint sections. JTF mandates hiragana こと for the formal noun.",
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "〜を出力",
+     "variants": [
+      "を出力",
+      "で出力",
+      "を出力して",
+      "を出力してください",
+      "出力は〜にしてください"
+     ],
+     "form": "request_ending",
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "〜を挙げて",
+     "variants": [
+      "挙げて",
+      "挙げてください",
+      "あげて",
+      "3つ挙げてください",
+      "15種類以上を順番に列挙"
+     ],
+     "form": "request_ending",
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "名詞＋する（サ変）",
+     "variants": [
+      "要約する",
+      "作成する",
+      "抽出する",
+      "分類する",
+      "校正する",
+      "翻訳する",
+      "分析する",
+      "提案する",
+      "出力する",
+      "表現する"
+     ],
+     "form": "sahen",
+     "note": "The サ変 noun alone is often written as a task label (e.g. #指示書：要約).",
+     "disagreement": "Whether a bare noun (e.g. just 議事録) counts as a clear ask is genuinely split — every guide recommends naming the verb explicitly and treats noun-only as 曖昧な指示.",
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457",
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "〜しないでください",
+     "variants": [
+      "しないでください",
+      "入れないでください",
+      "書かないでください",
+      "使わない",
+      "使用禁止",
+      "は禁止する",
+      "含めない"
+     ],
+     "form": "negative_instruction",
+     "note": "Negative explicit instruction — core of constraint sections. Counts as a clear ask.",
+     "sources": [
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+      "https://indepa.net/archives/6697",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+     "title": "Copilot for Microsoft 365 すぐに使えるプロンプト集! — Microsoft",
+     "type": "vendor-official-ja",
+     "what_it_gave": "Official Japanese prompt collection: 作成/要約/まとめ/リスト/追加/表示 plus bullet and table specs."
+    },
+    {
+     "url": "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+     "title": "文章生成AI利活用ガイドライン Version 1.0 — 東京都デジタルサービス局",
+     "type": "gov-official-ja",
+     "what_it_gave": "Real civil-servant prompts including the kanji 下さい usage and 平易表現 specs."
+    },
+    {
+     "url": "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+     "title": "生成AIの利用ガイドライン 別冊 プロンプト集 第1.0版 — 千葉県",
+     "type": "gov-official-ja",
+     "what_it_gave": "校正/書き換え/膨らませる/添削/案だし and the 〜こと 体言止め instruction form."
+    },
+    {
+     "url": "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+     "title": "JTF日本語標準スタイルガイド（翻訳用）第3.0版 — 日本翻訳連盟",
+     "type": "style-guide",
+     "what_it_gave": "Verified 2026-08-11 (第4.0版, 2026-07-25): a ○使用する／✕使用しない table mandating 「～ください」 over 「～下さい」 and 「～（する）こと」 over 「～（する）事」. Hiragana is mandated, not merely preferred."
+    },
+    {
+     "url": "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+     "title": "初心者でもわかる基本プロンプトの書き方 — KDDI",
+     "type": "vendor-column-ja",
+     "what_it_gave": "作ってください/作成して plus 見出し付き/箇条書き/500字以内."
+    },
+    {
+     "url": "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+     "title": "生成AIのプロンプト初心者向けテクニック6つのコツ — NTT東日本",
+     "type": "vendor-column-ja",
+     "what_it_gave": "〜にして conversion requests, question-back instructions, 表/HTML/JSON output specs."
+    },
+    {
+     "url": "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+     "title": "AIプロンプトとは？基本的な書き方やコツ — 富士フイルムBI",
+     "type": "vendor-column-ja",
+     "what_it_gave": "要約/分析/リストアップ/抽出/調査/計算 enumerated together with tone and length specs."
+    },
+    {
+     "url": "https://www.skygroup.jp/media/article/4191/",
+     "title": "プロンプトとは何？定義や種類、使い方や文例 — Sky株式会社",
+     "type": "vendor-column-ja",
+     "what_it_gave": "Comprehensive instruction-verb list including 校正・推敲・分類・抽出・補完."
+    },
+    {
+     "url": "https://metaversesouken.com/ai/generative_ai/template/",
+     "title": "【コピペ可】生成AIのプロンプトテンプレート例文集17選 — AI総研",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "評価・企画・ブラッシュアップ examples with 字数/改行/冒頭記載 specs."
+    },
+    {
+     "url": "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+     "title": "プロンプトの書き方完全ガイド｜7つの基本原則 — OptiMax",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "The most systematic source: explicit 形式・字数・トーン・構造・制約 taxonomy."
+    },
+    {
+     "url": "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+     "title": "プロンプトとは？AIへの指示文の書き方を5要素で身につける",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "5-element decomposition with worked examples."
+    },
+    {
+     "url": "https://precious.jp/articles/-/36207",
+     "title": "「お願いする」ときの正しい敬語表現は？ — Precious.jp",
+     "type": "business-japanese",
+     "what_it_gave": "Request endings ordered by politeness level."
+    },
+    {
+     "url": "https://fereple.com/writers-apc/writing-style/",
+     "title": "「です・ます調」「だ・である調」の違いと使い分け",
+     "type": "writing-style-guide",
+     "what_it_gave": "常体 imperative 〜せよ and the 敬体/常体 naming variants."
+    },
+    {
+     "url": "https://thesaurus.weblio.jp/content/%E4%BD%9C%E6%88%90",
+     "title": "「作成する」の言い換えや類語 — Weblio類語辞典",
+     "type": "thesaurus",
+     "what_it_gave": "作成 synonym set (作製/制作/製作/策定/立案/構築/設計)."
+    },
+    {
+     "url": "https://thesaurus.weblio.jp/content/%E3%81%BE%E3%81%A8%E3%82%81%E3%82%8B",
+     "title": "「まとめる」の言い換えや類語 — Weblio類語辞典",
+     "type": "thesaurus",
+     "what_it_gave": "まとめる synonym set (要約/集約/取りまとめ/整理/統括/一本化)."
+    },
+    {
+     "url": "https://indepa.net/archives/6697",
+     "title": "プロンプトエンジニアリングにおける「条件」と「制約条件」の違い",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "Role-setting, prohibition and requirement templates (〜は禁止する、必ず〜を含める)."
+    },
+    {
+     "url": "https://biz.moneyforward.com/ai/basic/3122/",
+     "title": "ChatGPTでコード生成するには？ — マネーフォワード クラウド",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "Implementation-side requests and JSON specs."
+    },
+    {
+     "url": "https://note.com/hiro_seki/n/nb5b57a8a6015",
+     "title": "ChatGPTで出力するフォーマットを指定し一発で成果物を決めるプロンプト — note",
+     "type": "practitioner-blog",
+     "what_it_gave": "列挙/書き出す/記す output verbs plus preamble-suppression and ordering."
+    },
+    {
+     "url": "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+     "title": "ChatGPTが文字数を守らない！文字数指定するやり方 — MiraLab",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "生成/回答/記述 forms and negative instructions."
+    },
+    {
+     "url": "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+     "title": "【AI】箇条書きのプロンプトと具体例",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "構造化して/グルーピングして/ジャンル分けして organizing verbs."
+    },
+    {
+     "url": "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+     "title": "【生成AIプロンプト入門】テキストで表現できる出力形式 — DevelopersIO",
+     "type": "tech-blog",
+     "what_it_gave": "出力する/表現する/読み込ませる verbs and the 〇〇で出力して frame."
+    },
+    {
+     "url": "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457",
+     "title": "プロンプトのマークダウン記述について — 情シスレスキュー隊",
+     "type": "tech-blog",
+     "what_it_gave": "#指示書/#制約条件/#入力文/#出力文 section-heading vocabulary."
+    },
+    {
+     "url": "https://www.goatman.co.jp/media/chatgpt-character-length-specification/",
+     "title": "「ChatGPTが文字数指定を守らない」を解決するプロンプト",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "Self-verification instructions (カウントしてください)."
+    }
+   ]
+  },
+  "format_markers": {
+   "label_ja": "出力形式マーカー",
+   "description": "Expressions specifying the shape of the answer. Presence is positive signal for the output-indicator subscore.",
+   "entry_count": 51,
+   "kind_key": {
+    "structure": "Shape or arrangement of the output.",
+    "length": "Amount of output.",
+    "tone": "Register, vocabulary level, or reader targeting.",
+    "language": "Which natural language to answer in."
+   },
+   "entries": [
+    {
+     "expression": "箇条書きで",
+     "kind": "structure",
+     "variants": [
+      "箇条書き",
+      "箇条書きにして",
+      "箇条書きで出力して",
+      "箇条書きで記載",
+      "かじょうがきで",
+      "要点を箇条書きに",
+      "簡潔に箇条書きにして",
+      "箇条書き形式",
+      "リスト形式で",
+      "リストで出力",
+      "ブレット形式",
+      "・で列挙",
+      "- で列挙"
+     ],
+     "note": "The most frequent format marker across all sources.",
+     "sources": [
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "表形式で",
+     "kind": "structure",
+     "variants": [
+      "表で",
+      "表形式",
+      "表にして",
+      "表に整理して下さい",
+      "一覧表で",
+      "テーブルで",
+      "テーブルにリストしてください",
+      "マークダウンの表で出力",
+      "表形式のデータを出力"
+     ],
+     "sources": [
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/"
+     ]
+    },
+    {
+     "expression": "マークダウンで",
+     "kind": "structure",
+     "variants": [
+      "マークダウン形式で",
+      "マークダウン記法で",
+      "マークダウンで出力",
+      "Markdown記法",
+      "MD形式で",
+      "markdownで"
+     ],
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "JSON形式で",
+     "kind": "structure",
+     "variants": [
+      "JSON形式にして",
+      "JSONで出力",
+      "JSON形式で出力してください",
+      "ジェイソン形式で",
+      "json形式で"
+     ],
+     "sources": [
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "CSV形式で",
+     "kind": "structure",
+     "variants": [
+      "CSVで出力",
+      "CSV形式で出力",
+      "CSVファイルに保存する",
+      "カンマ区切りで",
+      "csv形式で"
+     ],
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "HTMLで",
+     "kind": "structure",
+     "variants": [
+      "HTML形式で",
+      "HTMLで出力",
+      "HTMLタグでだして",
+      "htmlで"
+     ],
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html"
+     ]
+    },
+    {
+     "expression": "Mermaid（マーメイド）で",
+     "kind": "structure",
+     "variants": [
+      "マーメイドで出力",
+      "Mermaid記法で",
+      "mermaidで",
+      "図で表現して"
+     ],
+     "note": "Established in Japanese articles as the one text format that produces diagrams.",
+     "sources": [
+      "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/"
+     ]
+    },
+    {
+     "expression": "XMLタグで",
+     "kind": "structure",
+     "variants": [
+      "XML形式で",
+      "タグで囲んで",
+      "xmlタグで"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "コードブロックで",
+     "kind": "structure",
+     "variants": [
+      "コードブロックに入れて出力して",
+      "コードブロックで",
+      "コードのみ",
+      "コードだけ"
+     ],
+     "sources": [
+      "https://delaymania.com/202408/webservice/chatgpt-code-block/",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "見出しをつけて",
+     "kind": "structure",
+     "variants": [
+      "見出し付きで",
+      "見出しを使って生成",
+      "見出し＋本文のセットで",
+      "見出し付きの箇条書きで",
+      "A4サイズ1P見出し付きで"
+     ],
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "番号付きで",
+     "kind": "structure",
+     "variants": [
+      "番号付きリストで",
+      "ナンバリングして",
+      "通し番号で",
+      "連番で"
+     ],
+     "sources": [
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "ステップごとに",
+     "kind": "structure",
+     "variants": [
+      "ステップバイステップで",
+      "Step by Stepで考える",
+      "手順で",
+      "手順ごとに",
+      "段階的に",
+      "段階的に整理",
+      "順を追って"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "〜の順で",
+     "kind": "structure",
+     "variants": [
+      "順番に",
+      "順に",
+      "概要→メリット→デメリット→結論の順で",
+      "結論から",
+      "結論を先に"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "〜構成で",
+     "kind": "structure",
+     "variants": [
+      "3章構成で",
+      "章立てで",
+      "セクション構成で",
+      "3つのセクションで出力",
+      "構成は以下の通り",
+      "以下の構成で"
+     ],
+     "sources": [
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "3点で／〜個",
+     "kind": "structure",
+     "variants": [
+      "3つ",
+      "3つ挙げて",
+      "3つの要点に",
+      "3〜5つ程度の箇条書きで",
+      "15種類以上",
+      "〜個",
+      "〜件",
+      "〜項目",
+      "1つだけ",
+      "ハッシュタグ3つ"
+     ],
+     "note": "Count specification.",
+     "disagreement": "Classified here as structure, but count could equally be read as a length constraint. Sources do not settle it.",
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "構造化して",
+     "kind": "structure",
+     "variants": [
+      "グルーピングして",
+      "分類分けして",
+      "ジャンル別にして",
+      "ジャンル分けして",
+      "カテゴリごとに",
+      "階層で",
+      "入れ子で"
+     ],
+     "sources": [
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/"
+     ]
+    },
+    {
+     "expression": "会話形式で",
+     "kind": "structure",
+     "variants": [
+      "対話形式で",
+      "Q&A形式で",
+      "インタビュー風に",
+      "ロールプレイング風に",
+      "台本形式で"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://indepa.net/archives/6697"
+     ]
+    },
+    {
+     "expression": "以下のフォーマットで",
+     "kind": "structure",
+     "variants": [
+      "以下の形式で",
+      "次のフォーマットで",
+      "フォーマットに従って",
+      "テンプレートに沿って",
+      "下記の形式を厳守して",
+      "忠実に守って"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://www.goatman.co.jp/media/chatgpt-character-length-specification/"
+     ]
+    },
+    {
+     "expression": "太字で強調して",
+     "kind": "structure",
+     "variants": [
+      "太字にして",
+      "強調して",
+      "斜体で",
+      "取り消し線で"
+     ],
+     "sources": [
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "引用形式で",
+     "kind": "structure",
+     "variants": [
+      "ブロック引用で",
+      "引用符で囲んで"
+     ],
+     "sources": [
+      "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457"
+     ]
+    },
+    {
+     "expression": "冒頭に記載して",
+     "kind": "structure",
+     "variants": [
+      "最初に記載",
+      "先頭に",
+      "末尾に",
+      "最後にまとめを"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "改行して",
+     "kind": "structure",
+     "variants": [
+      "2〜3行ごとに改行",
+      "適宜改行を入れて",
+      "段落を分けて",
+      "1行空けて"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "全角記号で",
+     "kind": "structure",
+     "variants": [
+      "箇条書き先頭のマークは日本語の全角の英数記号を使って",
+      "半角で",
+      "全角で",
+      "記号は・を使って"
+     ],
+     "note": "Japanese-specific orthographic format spec. English prompt guidance has no counterpart, so no imported list would cover it.",
+     "sources": [
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/"
+     ]
+    },
+    {
+     "expression": "関数式で",
+     "kind": "structure",
+     "variants": [
+      "数式で",
+      "計算式で",
+      "SQLクエリで",
+      "関数で"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/",
+      "https://biz.moneyforward.com/ai/basic/3122/"
+     ]
+    },
+    {
+     "expression": "前置きなしで",
+     "kind": "structure",
+     "variants": [
+      "説明や解説は入れないでください",
+      "前後に説明や解説は入れないでください",
+      "前置き不要",
+      "挨拶不要",
+      "余計な説明は不要",
+      "結果だけ出して"
+     ],
+     "sources": [
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "必ず〜を含めて",
+     "kind": "structure",
+     "variants": [
+      "必ず〜を含める",
+      "〜を明記して",
+      "担当者・期限を明記",
+      "〜を自然に含める",
+      "〜は省かないで"
+     ],
+     "sources": [
+      "https://indepa.net/archives/6697",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "プレゼン資料の形式で",
+     "kind": "structure",
+     "variants": [
+      "スライド形式で",
+      "プレゼンテーションを作成",
+      "議事録の形式で",
+      "メール文の形式で",
+      "企画書の形式で",
+      "A4サイズ1Pで"
+     ],
+     "note": "The deliverable type itself acts as an implicit format spec.",
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/"
+     ]
+    },
+    {
+     "expression": "縦横比・レイアウト指定",
+     "kind": "structure",
+     "variants": [
+      "縦：横=1：2",
+      "レイアウトは〜",
+      "2列で",
+      "左右に並べて"
+     ],
+     "sources": [
+      "https://metaversesouken.com/ai/generative_ai/template/"
+     ]
+    },
+    {
+     "expression": "〜文字以内で",
+     "kind": "length",
+     "variants": [
+      "文字以内",
+      "字以内",
+      "200文字以内で",
+      "100文字以内で",
+      "300文字以内",
+      "15文字以内",
+      "各項目200字以内",
+      "全体で1,000字以内",
+      "を超えないで",
+      "上限〜字"
+     ],
+     "note": "The most common length spec.",
+     "disagreement": "Multiple Japanese verification articles report LLMs frequently fail to obey character counts and recommend 程度 over 以内, or a self-count step. Detecting the marker is not the same as the constraint holding.",
+     "sources": [
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/"
+     ]
+    },
+    {
+     "expression": "〜文字程度で",
+     "kind": "length",
+     "variants": [
+      "文字程度",
+      "字程度",
+      "200字程度",
+      "400文字程度",
+      "130文字程度",
+      "文字前後",
+      "くらいで",
+      "ほどで"
+     ],
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/"
+     ]
+    },
+    {
+     "expression": "〜文字で",
+     "kind": "length",
+     "variants": [
+      "300文字で作成",
+      "200字で",
+      "500字で",
+      "文字ちょうどで",
+      "きっかり〜文字で"
+     ],
+     "sources": [
+      "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf"
+     ]
+    },
+    {
+     "expression": "〜文字以上で",
+     "kind": "length",
+     "variants": [
+      "文字以上",
+      "字以上",
+      "2,000文字以上",
+      "3,000文字以上",
+      "下限〜字",
+      "最低〜文字"
+     ],
+     "sources": [
+      "https://www.goatman.co.jp/media/chatgpt-character-length-specification/"
+     ]
+    },
+    {
+     "expression": "〜文字〜〜文字で（範囲）",
+     "kind": "length",
+     "variants": [
+      "500字〜600字",
+      "500〜600文字",
+      "200〜300文字以内で",
+      "〜から〜文字",
+      "上限と下限を指定"
+     ],
+     "sources": [
+      "https://www.goatman.co.jp/media/chatgpt-character-length-specification/",
+      "https://miralab.co.jp/media/chatgpt_character_limit_prompt/"
+     ]
+    },
+    {
+     "expression": "〜行以内で",
+     "kind": "length",
+     "variants": [
+      "各項目3行以内",
+      "3行で",
+      "〜行程度",
+      "1行で"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "一文で",
+     "kind": "length",
+     "variants": [
+      "1文で",
+      "短文で",
+      "一言で",
+      "短文でわかりやすく",
+      "ひとことで"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://note.com/hiro_seki/n/nb5b57a8a6015"
+     ]
+    },
+    {
+     "expression": "簡潔に",
+     "kind": "length",
+     "variants": [
+      "簡潔な言葉で",
+      "端的に",
+      "短く",
+      "要点のみ",
+      "項目のみ",
+      "コンパクトに",
+      "かんけつに"
+     ],
+     "disagreement": "KDDI treats 簡潔に as an output-quantity spec; Microsoft's official Japanese page uses 簡潔な言葉を使ってください as a vocabulary/tone instruction. length vs tone is genuinely split.",
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/"
+     ]
+    },
+    {
+     "expression": "詳しく",
+     "kind": "length",
+     "variants": [
+      "詳細に",
+      "具体的に",
+      "具体的に記載",
+      "掘り下げて",
+      "丁寧に説明して"
+     ],
+     "disagreement": "OVERLAP with vague_words — it specifies a direction without a target. Treat as a weak positive for output-indicator and a flag for specificity; do not let both rules fire on one occurrence.",
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://aiacademy.jp/media/?p=8049"
+     ]
+    },
+    {
+     "expression": "です・ます調で",
+     "kind": "tone",
+     "variants": [
+      "ですます調で",
+      "ですます調",
+      "敬体で",
+      "丁寧語で",
+      "丁寧な文体で",
+      "丁寧なメール文で",
+      "です・ます調"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://fereple.com/writers-apc/writing-style/"
+     ]
+    },
+    {
+     "expression": "だ・である調で",
+     "kind": "tone",
+     "variants": [
+      "である調で",
+      "だ調で",
+      "常体で",
+      "だ・である調",
+      "である体で"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+      "https://fereple.com/writers-apc/writing-style/"
+     ]
+    },
+    {
+     "expression": "敬語で",
+     "kind": "tone",
+     "variants": [
+      "丁寧な言葉で",
+      "失礼のない内容で",
+      "丁寧に",
+      "かしこまった表現で",
+      "ビジネス敬語で"
+     ],
+     "sources": [
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://precious.jp/articles/-/36207"
+     ]
+    },
+    {
+     "expression": "小学生にもわかるように",
+     "kind": "tone",
+     "variants": [
+      "小学生でもわかるように",
+      "小学３年生でも理解できるように",
+      "子供でもわかるように",
+      "中学生でもわかるように",
+      "高校生にもわかるように",
+      "平易な言葉で",
+      "やさしい言葉で"
+     ],
+     "note": "Extremely formulaic in Japanese prompts — appears as an example even in official government guidelines.",
+     "sources": [
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+      "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide"
+     ]
+    },
+    {
+     "expression": "専門用語を使わずに",
+     "kind": "tone",
+     "variants": [
+      "専門用語を避け",
+      "専門用語は避ける",
+      "専門用語を減らして",
+      "専門用語は最小限",
+      "専門用語には1文の補足を添えてください",
+      "難しい言葉を使わないで"
+     ],
+     "sources": [
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "〜向けに",
+     "kind": "tone",
+     "variants": [
+      "初心者向けに",
+      "初心者でも理解できるように",
+      "AI初心者の社会人向けに",
+      "決裁者向けに",
+      "職員向けに",
+      "ビジネス向けの文章に",
+      "対象読者は〜"
+     ],
+     "sources": [
+      "https://www.skygroup.jp/media/article/4191/",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf"
+     ]
+    },
+    {
+     "expression": "わかりやすく",
+     "kind": "tone",
+     "variants": [
+      "分かりやすく",
+      "読みやすい文体で",
+      "わかりやすい文章で",
+      "理解しやすいように",
+      "伝わりやすく"
+     ],
+     "disagreement": "OVERLAP with vague_words — AI Academy lists it as an NG prompt word because the audience is unnamed, while prompt guides list it as a legitimate tone spec. Same double-classification caveat as 詳しく.",
+     "sources": [
+      "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+      "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+      "https://aiacademy.jp/media/?p=8049"
+     ]
+    },
+    {
+     "expression": "親しみやすく",
+     "kind": "tone",
+     "variants": [
+      "カジュアルに",
+      "フランクに",
+      "丁寧だが堅すぎない",
+      "堅すぎない",
+      "爽やか",
+      "ナチュラル",
+      "リラックスした雰囲気で"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://aipicks.jp/mag/ai-prompt-writing-complete-guide"
+     ]
+    },
+    {
+     "expression": "〜として（役割指定）",
+     "kind": "tone",
+     "variants": [
+      "あなたは〇〇の専門家である",
+      "〇〇として受け答えをします",
+      "〜になりきって",
+      "プロの〜として",
+      "〜の立場で"
+     ],
+     "note": "Role setting indirectly determines register and vocabulary, so it functions as a de facto tone marker.",
+     "disagreement": "Whether role setting counts as an output-format spec or as a precondition differs by guide. Included here conservatively.",
+     "sources": [
+      "https://indepa.net/archives/6697",
+      "https://www.skygroup.jp/media/article/4191/"
+     ]
+    },
+    {
+     "expression": "推測を含めないで",
+     "kind": "tone",
+     "variants": [
+      "推測や解釈は含めない",
+      "発言内容のみに基づく",
+      "事実のみ",
+      "根拠のない主張は禁止",
+      "データがない項目は「要調査」と明記"
+     ],
+     "sources": [
+      "https://www.optimax.co.jp/ai-information/prompt-writing-guide/"
+     ]
+    },
+    {
+     "expression": "絵文字を含めて",
+     "kind": "tone",
+     "variants": [
+      "絵文字あり",
+      "絵文字なしで",
+      "ハッシュタグをつけて",
+      "顔文字を入れて"
+     ],
+     "sources": [
+      "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "日本語で",
+     "kind": "language",
+     "variants": [
+      "日本語で出力",
+      "日本語で回答してください",
+      "回答は日本語で",
+      "日本語でお願いします",
+      "にほんごで"
+     ],
+     "note": "Japanese users add this explicitly to prevent English replies.",
+     "disagreement": "Thinner sourcing than other entries — only two sources (Microsoft official JA and 東京都 guideline). Two candidate corroborating pages were robots.txt-blocked.",
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    },
+    {
+     "expression": "英語で",
+     "kind": "language",
+     "variants": [
+      "英語で書いてください",
+      "英語で出力",
+      "英文で",
+      "英訳して"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+      "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf"
+     ]
+    },
+    {
+     "expression": "日本語と英語で",
+     "kind": "language",
+     "variants": [
+      "日本語と英語で書いてください",
+      "日英併記で",
+      "対訳で",
+      "両方の言語で"
+     ],
+     "sources": [
+      "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts"
+     ]
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://dev.classmethod.jp/articles/generative-ai-output-formats-guide/",
+     "title": "【生成AIプロンプト入門】テキストで表現できる出力形式 — DevelopersIO",
+     "type": "tech-blog",
+     "what_it_gave": "Markdown/Mermaid/HTML/CSV and the generic 〇〇で出力して frame."
+    },
+    {
+     "url": "https://note.com/hiro_seki/n/nb5b57a8a6015",
+     "title": "ChatGPTで出力するフォーマットを指定し一発で成果物を決めるプロンプト — note",
+     "type": "practitioner-blog",
+     "what_it_gave": "Bullet/list/CSV/JSON/markdown-table specs and 前後に説明や解説は入れないでください."
+    },
+    {
+     "url": "https://www.softcreate.co.jp/rescue/microsoft/yamaguchi/457",
+     "title": "プロンプトのマークダウン記述について — 情シスレスキュー隊",
+     "type": "tech-blog",
+     "what_it_gave": "Heading, numbered list, bold, italic, strikethrough and quote notation."
+    },
+    {
+     "url": "https://tabibitojin.com/chatgpt-prompt-bullet-point-format/",
+     "title": "【AI】箇条書きのプロンプトと具体例",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "Bullet phrasings plus the Japanese-specific 全角の英数記号を使って spec."
+    },
+    {
+     "url": "https://miralab.co.jp/media/chatgpt_character_limit_prompt/",
+     "title": "ChatGPTが文字数を守らない！文字数指定するやり方 — MiraLab",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "以内/程度/を超えないで length forms and the compliance-failure finding."
+    },
+    {
+     "url": "https://www.goatman.co.jp/media/chatgpt-character-length-specification/",
+     "title": "「ChatGPTが文字数指定を守らない」を解決するプロンプト",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "Separate upper/lower bound templates and self-count instructions."
+    },
+    {
+     "url": "https://www.optimax.co.jp/ai-information/prompt-writing-guide/",
+     "title": "【2026年版】プロンプトの書き方完全ガイド — OptiMax",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "The most systematic source: explicit 形式・字数・トーン・構造・制約 four-way classification."
+    },
+    {
+     "url": "https://aipicks.jp/mag/ai-prompt-writing-complete-guide",
+     "title": "プロンプトとは？AIへの指示文の書き方を5要素で身につける",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "3つの箇条書きで/3章構成で/200字程度/専門用語を避け examples."
+    },
+    {
+     "url": "https://www.microsoft.com/ja-jp/area/biz/smb/copilot-prompts",
+     "title": "Copilot for Microsoft 365 すぐに使えるプロンプト集! — Microsoft",
+     "type": "vendor-official-ja",
+     "what_it_gave": "Official JA examples: 3〜5つ程度の箇条書きで／テーブルにリストして／日本語と英語で書いてください."
+    },
+    {
+     "url": "https://www.ikebukuro-net.jp/backnumber/mpg/202308/to-gaid2023.pdf",
+     "title": "文章生成AI利活用ガイドライン Version 1.0 — 東京都デジタルサービス局",
+     "type": "gov-official-ja",
+     "what_it_gave": "200字で／箇条書きで項目のみ／小学３年生でも理解できるように平易な言葉で."
+    },
+    {
+     "url": "https://www.pref.chiba.lg.jp/dejisui/press/2023/documents/guideline20240201-pr.pdf",
+     "title": "生成AIの利用ガイドライン 別冊 プロンプト集 第1.0版 — 千葉県",
+     "type": "gov-official-ja",
+     "what_it_gave": "表に整理して下さい／●●文字程度に膨らませて／Step by Stepで考える／会話形式で生成."
+    },
+    {
+     "url": "https://business.ntt-east.co.jp/content/cloudsolution/municipality/b_column-05.html",
+     "title": "生成AIのプロンプト初心者向けテクニック6つのコツ — NTT東日本",
+     "type": "vendor-column-ja",
+     "what_it_gave": "表形式で出力／箇条書きにして／見出しを使って生成／HTMLタグでだして／JSON形式にして."
+    },
+    {
+     "url": "https://biz.kddi.com/content/column/smb/create-prompt-basics/",
+     "title": "初心者でもわかる基本プロンプトの書き方 — KDDI",
+     "type": "vendor-column-ja",
+     "what_it_gave": "箇条書き形式／見出し付きで／A4サイズ1P／500字以内／読みやすい文体で."
+    },
+    {
+     "url": "https://www.fujifilm.com/fb/ja/solutions/columns/ai-14831",
+     "title": "AIプロンプトとは？基本的な書き方やコツ — 富士フイルムBI",
+     "type": "vendor-column-ja",
+     "what_it_gave": "Graduated character counts (50/150/200/300/3000), tone vocabulary, emoji and hashtag specs."
+    },
+    {
+     "url": "https://www.skygroup.jp/media/article/4191/",
+     "title": "プロンプトとは何？定義や種類、使い方や文例 — Sky株式会社",
+     "type": "vendor-column-ja",
+     "what_it_gave": "ブレット形式／ですます調で／インタビュー風に／3つのセクションで出力."
+    },
+    {
+     "url": "https://metaversesouken.com/ai/generative_ai/template/",
+     "title": "【コピペ可】生成AIのプロンプトテンプレート例文集17選 — AI総研",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "200文字程度／15文字以内／2〜3行ごとに改行／冒頭に記載／縦：横=1：2／関数式."
+    },
+    {
+     "url": "https://fereple.com/writers-apc/writing-style/",
+     "title": "「です・ます調」「だ・である調」の違いと使い分け",
+     "type": "writing-style-guide",
+     "what_it_gave": "敬体/常体/だ調/である調/丁寧語 naming variants and sentence-ending inventory."
+    },
+    {
+     "url": "https://www.jtf.jp/pdf/jtf_style_guide.pdf",
+     "title": "JTF日本語標準スタイルガイド（翻訳用）第3.0版 — 日本翻訳連盟",
+     "type": "style-guide",
+     "what_it_gave": "Verified 2026-08-11 (第4.0版, 2026-07-25): a ○使用する／✕使用しない table mandating 「～ください」 over 「～下さい」 and 「～（する）こと」 over 「～（する）事」. Hiragana is mandated, not merely preferred."
+    },
+    {
+     "url": "https://indepa.net/archives/6697",
+     "title": "プロンプトエンジニアリングにおける「条件」と「制約条件」の違い",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "200文字以内に収めてください／必ず〜を含める／〜は禁止する constraint templates."
+    },
+    {
+     "url": "https://delaymania.com/202408/webservice/chatgpt-code-block/",
+     "title": "ChatGPT「コードブロックに入れて出力して」が便利すぎる",
+     "type": "practitioner-blog",
+     "what_it_gave": "The single established phrase コードブロックに入れて出力して."
+    },
+    {
+     "url": "https://biz.moneyforward.com/ai/basic/3122/",
+     "title": "ChatGPTでコード生成するには？ — マネーフォワード クラウド",
+     "type": "prompt-guide-blog",
+     "what_it_gave": "出力はJSON形式にしてください／CSVファイルに保存する."
+    },
+    {
+     "url": "https://precious.jp/articles/-/36207",
+     "title": "「お願いする」ときの正しい敬語表現は？ — Precious.jp",
+     "type": "business-japanese",
+     "what_it_gave": "Politeness-register hierarchy — the basis for the tone/register tag."
+    },
+    {
+     "url": "https://thesaurus.weblio.jp/content/%E3%81%BE%E3%81%A8%E3%82%81%E3%82%8B",
+     "title": "「まとめる」の言い換えや類語 — Weblio類語辞典",
+     "type": "thesaurus",
+     "what_it_gave": "簡潔にする/凝縮する/圧縮する/簡略化する — variants of the conciseness marker."
+    }
+   ],
+   "unreachable_sources": [
+    "pythonandai.com（50選プロンプト集）",
+    "toritemi.com（出力言語指定）— both robots.txt-blocked. The language markers have thinner corroboration than other entries as a result."
+   ]
+  }
+ },
+ "cross_list_notes": [
+  "INTENTIONAL OVERLAPS — three families appear in two lists on purpose. (1) 対応する／検討する／最適化する are grammatically clear asks (task_verbs) but semantically empty ones (vague_words): a prompt reading only 対応してください should score as HAVING a task verb AND as vague. (2) わかりやすく／詳しく are weak output-shape specs (format_markers) that name a direction but no target (vague_words). Decide the scoring interaction deliberately; do not let both rules fire visibly on the same span.",
+  "The 適切に loop is worth a rubric note. Japanese politeness guides recommend 適切な as the formal upgrade for ざっくり／適当な, while prompt guides list 適切に as an NG prompt word. A de-vaguing rewrite can therefore produce text that trips the same rule. Never suggest 適切に as a fix.",
+  "Cushion detection should run BEFORE task-verb and format-marker detection. Cushions stack at position 0 and several contain verbs (お伺いしたいことがあるのですが) that would otherwise register as task verbs.",
+  "Orthographic normalization is load-bearing for all four lists. SudachiDict's normalized forms (正規化表記) and its synonym dictionary's 表記ゆれ column — both Apache 2.0 — solve this without license entanglement. See the D2 report."
+ ]
+}
