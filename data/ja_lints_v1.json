@@ -1,0 +1,2798 @@
+{
+  "meta": {
+    "name": "ja_lints_v1",
+    "version": "1.0.0",
+    "built_by": "scripts/trim_lexicon.py",
+    "built_from": {
+      "name": "ja_lints_research",
+      "version": "0.1.0",
+      "generated": "2026-08-11"
+    },
+    "filter_rule": "confidence high|medium -> entries; low -> info_level (retained, lower severity); absent -> entries (unrated). Only vague_words carries confidence.",
+    "dropped_entry_fields": [
+      "note",
+      "sources",
+      "disagreement"
+    ],
+    "counts": {
+      "vague_words": {
+        "active": 60,
+        "info_level": 4
+      },
+      "cushion_words": {
+        "active": 68,
+        "info_level": 0
+      },
+      "task_verbs": {
+        "active": 64,
+        "info_level": 0
+      },
+      "format_markers": {
+        "active": 51,
+        "info_level": 0
+      }
+    }
+  },
+  "lists": {
+    "vague_words": {
+      "label_ja": "あいまい・丸投げ表現",
+      "description": "Expressions people actually write in requests and prompts that leave the work under-specified or hand the judgment to the other party.",
+      "productive_patterns": [
+        {
+          "pattern": "[任意の主観的形容詞・オノマトペ] + 感じ|具合 + で|に",
+          "regex_sketch": "(?:.{1,8})(?:な)?(?:感じ|具合)(?:で|に)",
+          "why": "The highest-yield finding across the design-brief sources. Japanese vague requests overwhelmingly form as [subjective adjective or onomatopoeia] + 感じ/具合 + で/に, which generates infinitely many surface forms (ラグジュアリーな感じで, イケてる感じで, シュッとした感じで, ぼわっと…). No static wordlist catches these.",
+          "sources": [
+            "https://www.y-create.co.jp/forcreator/possible_gd/",
+            "https://anagrams.jp/blog/abstract-design-requests-and-solutions/"
+          ]
+        },
+        {
+          "pattern": "指示語 with no antecedent in the prompt",
+          "regex_sketch": "(?:あの|例の|その|この)(?:件|やつ|アレ|あたり|辺)",
+          "why": "こそあど reference to context the reader does not have. Distinct failure mode from vague adverbs.",
+          "sources": [
+            "https://educommunication.or.jp/post-4346/",
+            "https://doc.dev1x.org/sweng/12/"
+          ]
+        }
+      ],
+      "suggested_fix_templates": {
+        "note": "Three Japanese sources independently converge on the same repair, which gives the lint three distinct suggestion shapes rather than one generic scold.",
+        "templates": [
+          {
+            "id": "number",
+            "ja": "数字に置き換える",
+            "example": "短めに → 100字以内で",
+            "source": "https://aiacademy.jp/media/?p=8049"
+          },
+          {
+            "id": "proper_noun",
+            "ja": "固有名詞で特定する",
+            "example": "例の納期 → 新商品『POOOTA！』の納期を5月4日（木）",
+            "source": "https://next.rikunabi.com/journal/20160222_1/"
+          },
+          {
+            "id": "reason",
+            "ja": "理由・意図を添える",
+            "example": "ロゴをもっと大きく → 目立たせたいので、ロゴをもっと大きく",
+            "source": "https://kmy.website/touch-up-with-reason/"
+          },
+          {
+            "id": "specify_referent",
+            "ja": "指示語を固有名詞で特定する",
+            "example": "当該の〇〇 → 新商品『POOOTA！』の納期を5月4日（木）",
+            "source": "https://next.rikunabi.com/journal/20160222_1/",
+            "moved_from": "lists.vague_words.entries[あの件].variants",
+            "note": "Relocated by trim_lexicon.py: 〇〇 is a placeholder, so this string cannot match real text as a literal needle. It belongs with the fixes, not the match set."
+          }
+        ]
+      },
+      "entries": [
+        {
+          "expression": "いい感じに",
+          "variants": [
+            "いい感じで",
+            "いい感じにして",
+            "いい感じにまとめといて",
+            "良い感じに",
+            "良い感じで",
+            "イイ感じに",
+            "いい感じ",
+            "なんかいい感じで"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "よしなに",
+          "variants": [
+            "よしなにお願いします",
+            "よしなにお願いいたします",
+            "よしなに頼む",
+            "どうぞよしなに",
+            "良しなに"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "よろしく",
+          "variants": [
+            "よろしくね",
+            "あの件よろしく",
+            "例の件よろしく",
+            "よろしく頼む"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "うまく",
+          "variants": [
+            "上手く",
+            "うまくやっといて",
+            "うまいこと",
+            "上手いこと",
+            "うまい具合に",
+            "うまくまとめといて"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "適当に",
+          "variants": [
+            "テキトーに",
+            "てきとうに",
+            "適当な",
+            "テキトー",
+            "適当で",
+            "適当にやっといて"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "ざっくり",
+          "variants": [
+            "ざっくりと",
+            "ザックリ",
+            "ざっくりまとめて",
+            "ざっくり言うと",
+            "大雑把に"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "なんとなく",
+          "variants": [
+            "何となく",
+            "なんとなくで",
+            "ナントナク"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "とりあえず",
+          "variants": [
+            "取り敢えず",
+            "とりあえずお願い",
+            "とりあえずやっといて",
+            "とりあえずで"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "臨機応変に",
+          "variants": [
+            "臨機応変に対応して",
+            "臨機応変な対応で",
+            "臨機応変で",
+            "柔軟に対応して"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "適宜",
+          "variants": [
+            "てきぎ",
+            "適宜対応",
+            "適宜お願いします",
+            "適宜ご対応ください",
+            "適宜判断して"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "随時",
+          "variants": [
+            "ずいじ",
+            "随時対応",
+            "随時ご連絡",
+            "必要に応じて",
+            "都度"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "お任せします",
+          "variants": [
+            "お任せで",
+            "おまかせ",
+            "おまかせで",
+            "お任せいたします",
+            "任せるよ",
+            "任せた",
+            "好きにやってください",
+            "あなたのセンスを信用していますので"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "気を利かせて",
+          "variants": [
+            "気をきかせて",
+            "気を利かせる",
+            "気が利く対応で"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "察して",
+          "variants": [
+            "察してほしい",
+            "空気を読んで",
+            "言わなくてもわかるでしょ",
+            "汲み取って"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "しっかり",
+          "variants": [
+            "しっかりと",
+            "しっかりやって",
+            "シッカリ"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "ちゃんと",
+          "variants": [
+            "ちゃんと〜",
+            "ちゃんとやって",
+            "ちゃんと考えて",
+            "チャンと"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "きちんと",
+          "variants": [
+            "きちんと〜",
+            "きっちり",
+            "キチンと"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "頑張って",
+          "variants": [
+            "がんばって",
+            "もっと頑張って",
+            "気合いを入れて"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "工夫して",
+          "variants": [
+            "ひと工夫して",
+            "工夫してやって"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "お客様目線で",
+          "variants": [
+            "ユーザー目線で",
+            "顧客視点で",
+            "相手の立場に立って"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "なるべく早く",
+          "variants": [
+            "なるはや",
+            "なる早",
+            "ナルハヤ",
+            "できるだけ早く",
+            "可能な限り早く",
+            "なるべく",
+            "できるだけ"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "早めに",
+          "variants": [
+            "はやめに",
+            "少し早め",
+            "早めで",
+            "お早めに"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "すぐに",
+          "variants": [
+            "至急",
+            "速やかに",
+            "ただちに",
+            "即時",
+            "瞬時に",
+            "素早く",
+            "リアルタイムに",
+            "ほぼリアルタイムに"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "あとで",
+          "variants": [
+            "後で",
+            "あとで見るからやっといて",
+            "のちほど",
+            "後ほど"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "そのうちに",
+          "variants": [
+            "そのうち",
+            "近いうちに",
+            "おいおい",
+            "追って"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "ちょっと",
+          "variants": [
+            "ちょっと調べておいて",
+            "ちょっと調整しておいて",
+            "ちょっと考えてみてよ",
+            "ちょっとだけ",
+            "少し"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "諸々",
+          "variants": [
+            "もろもろ",
+            "諸々の",
+            "諸々よろしく",
+            "諸般の"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "いろいろ",
+          "variants": [
+            "色々",
+            "色々な",
+            "いろんな",
+            "イロイロ",
+            "様々"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "など",
+          "variants": [
+            "等",
+            "〜など",
+            "などなど",
+            "といった",
+            "その他",
+            "他"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "それなりに",
+          "variants": [
+            "それなり",
+            "それなりの",
+            "ソレナリに",
+            "そこそこ",
+            "そこそこの"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "まあまあ",
+          "variants": [
+            "まぁまぁ",
+            "可もなく不可もなく",
+            "ぼちぼち"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "一応",
+          "variants": [
+            "いちおう",
+            "イチオウ",
+            "一応やっといて",
+            "とりあえず一応"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "適度に",
+          "variants": [
+            "適度な",
+            "ほどよく",
+            "程よく",
+            "ほどほどに",
+            "程々の"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "多めに",
+          "variants": [
+            "多め",
+            "少なめ",
+            "短め",
+            "長め",
+            "短く",
+            "長く"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "十分な",
+          "variants": [
+            "十分に",
+            "充分な",
+            "必要十分な",
+            "重大な",
+            "重要な"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "基本的な",
+          "variants": [
+            "基本的に",
+            "一般的な",
+            "一般的に",
+            "通常の",
+            "通常は"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "わかりやすく",
+          "variants": [
+            "分かりやすく",
+            "分かりやすくして",
+            "判りやすく",
+            "わかりやすい",
+            "わかりやすくまとめて"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "見やすく",
+          "variants": [
+            "見やすい",
+            "読みやすく",
+            "もっと読みやすくしてほしい",
+            "見やすくして"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "詳しく",
+          "variants": [
+            "詳細に",
+            "詳しく教えて",
+            "もっと詳しく",
+            "細かく"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "シンプルに",
+          "variants": [
+            "シンプルな",
+            "シンプルで",
+            "すっきり",
+            "スッキリと"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "バランスよく",
+          "variants": [
+            "バランス良く",
+            "バランスを見て",
+            "バランスよくまとめて"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "自然に",
+          "variants": [
+            "自然な",
+            "自然な感じで",
+            "ナチュラルに"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "適切に",
+          "variants": [
+            "適切な",
+            "適切に対応",
+            "適切に処理",
+            "しかるべく"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "プロっぽく",
+          "variants": [
+            "プロっぽい",
+            "プロっぽい感じで",
+            "〜っぽく",
+            "それっぽく",
+            "それっぽい"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "〜な感じで",
+          "variants": [
+            "いい感じで",
+            "ラグジュアリーな感じで",
+            "イケてる感じで",
+            "最近流行っている感じで",
+            "インパクトある感じで",
+            "オシャレな感じ",
+            "って感じ",
+            "こんな感じで"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "おしゃれに",
+          "variants": [
+            "オシャレに",
+            "おしゃれにして！",
+            "スタイリッシュに",
+            "かっこよく"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "もっと",
+          "variants": [
+            "もっと大きく",
+            "もっとインパクトを",
+            "もう少し",
+            "もうちょっと",
+            "もっとこう"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "なんか",
+          "variants": [
+            "何か",
+            "なんか違う",
+            "なんだかぱっとしない",
+            "なんかスカスカしてる",
+            "なんかいい",
+            "何かいい",
+            "なんかこう"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "思ってたのと違う",
+          "variants": [
+            "イメージと違う",
+            "ちょっと思ってたのと違う",
+            "今ひとつ",
+            "いまいち",
+            "イマイチ",
+            "なにかが足りない"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "前と同じような",
+          "variants": [
+            "前と同じようなやつで",
+            "いつもの感じで",
+            "この前みたいに",
+            "例のやつで"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "あの件",
+          "variants": [
+            "例の件",
+            "例のアレ",
+            "あれ",
+            "その辺",
+            "そのあたり",
+            "これら",
+            "それら"
+          ],
+          "confidence": "high"
+        },
+        {
+          "expression": "対応する",
+          "variants": [
+            "対応しておいて",
+            "対応をお願い",
+            "対処する",
+            "処理する",
+            "チェックする"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "検討する",
+          "variants": [
+            "検討しておいて",
+            "検討します",
+            "考えておきましょう",
+            "見直す",
+            "見直しておいて",
+            "調整する"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "最適化する",
+          "variants": [
+            "最適化しておいて",
+            "推進する",
+            "管理する",
+            "整合を取る",
+            "適合させる",
+            "準備する"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "〜的な",
+          "variants": [
+            "〜っぽい",
+            "〜みたいな",
+            "〜という感じ",
+            "って感じ",
+            "〜とか",
+            "というか"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "微妙",
+          "variants": [
+            "びみょう",
+            "ビミョー",
+            "微妙です"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "〜と思います",
+          "variants": [
+            "だろう",
+            "かもしれない",
+            "といえるかもしれない",
+            "たぶん",
+            "多分大丈夫でしょう",
+            "おそらく",
+            "〜のようであり"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "どうにか",
+          "variants": [
+            "なんとか",
+            "何とか",
+            "なんとかして",
+            "なんとかなる",
+            "どうにかして"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "ぼんやり",
+          "variants": [
+            "ぼんやりと",
+            "ぼわっと",
+            "ふんわり",
+            "ふんわりと"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "expression": "簡単",
+          "variants": [
+            "簡単に",
+            "効率的",
+            "効率的に",
+            "簡単でいいので"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "info_level": [
+        {
+          "expression": "サクッと",
+          "variants": [
+            "さくっと",
+            "サクっと",
+            "サクッとやって",
+            "サクッとお願い"
+          ],
+          "confidence": "low"
+        },
+        {
+          "expression": "ちゃちゃっと",
+          "variants": [
+            "チャチャッと",
+            "ちゃっちゃと",
+            "ちゃちゃっとやって",
+            "ちゃちゃっと済ませて"
+          ],
+          "confidence": "low"
+        },
+        {
+          "expression": "まるっと",
+          "variants": [
+            "丸っと",
+            "マルっと",
+            "まるっとお願い",
+            "まるごと"
+          ],
+          "confidence": "low"
+        },
+        {
+          "expression": "シュッと",
+          "variants": [
+            "しゅっと",
+            "シュッとした",
+            "シュッとさせて"
+          ],
+          "confidence": "low"
+        }
+      ]
+    },
+    "cushion_words": {
+      "label_ja": "クッション言葉",
+      "description": "Politeness padding at the head of a request. Detected so it can be discounted when measuring prompt specificity.",
+      "action_key": {
+        "strip": "True zero-information padding. Safe to discount entirely when scoring specificity.",
+        "flag": "Encodes a real constraint (grants an out, waives urgency). Discounting it silently upgrades a soft ask to a hard one.",
+        "keep": "Not padding at all — asserts a fact. Removing it deletes information."
+      },
+      "entries": [
+        {
+          "expression": "お手数ですが",
+          "variants": [
+            "お手数をおかけしますが",
+            "お手数をおかけいたしますが",
+            "お手数ではございますが",
+            "お手数ではありますが",
+            "お手数をおかけし恐れ入りますが",
+            "お手数をおかけし大変恐縮ですが",
+            "重ね重ねお手数をおかけ致しますが",
+            "お手数おかけしますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "恐れ入りますが",
+          "variants": [
+            "大変恐れ入りますが",
+            "誠に恐れ入りますが",
+            "恐れ入ります",
+            "お忙しいところ恐れ入りますが",
+            "たびたび恐れ入りますが",
+            "度々のご連絡で恐れ入りますが",
+            "直前に恐れ入りますが",
+            "こちらの都合で恐れ入りますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "恐縮ですが",
+          "variants": [
+            "大変恐縮ですが",
+            "大変恐縮ではございますが",
+            "大変恐縮でございますが",
+            "誠に恐縮ですが",
+            "たいへん恐縮なのですが",
+            "私事で恐縮ですが",
+            "恐縮至極ではございますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "お忙しいところ恐縮ですが",
+          "variants": [
+            "お忙しいところ恐れ入りますが",
+            "お忙しいところ大変恐縮ですが",
+            "お忙しい中恐れ入りますが",
+            "お忙しい折恐縮ではございますが",
+            "お忙しいところ申し訳ありませんが",
+            "お忙しいところ申し訳ございませんが",
+            "お忙しい中、申し訳ありませんが",
+            "お忙しいところお手数ですが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご多忙のところ",
+          "variants": [
+            "ご多忙とは存じますが",
+            "ご多忙中とは存じますが",
+            "ご多忙の折",
+            "ご多忙の折ではございますが",
+            "ご多忙にもかかわらず",
+            "ご多忙中にもかかわらず",
+            "ご多忙の中",
+            "ご多忙のところ申し訳ございませんが",
+            "御多忙と存じますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご多用のところ",
+          "variants": [
+            "ご多用中とは存じますが",
+            "ご多用の折",
+            "ご多用中",
+            "ご多用のところ恐れ入りますが",
+            "ご多用のところ恐縮です",
+            "ご多用の折お手数をおかけいたしますが",
+            "ご多用のところとは存じますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "差し支えなければ",
+          "variants": [
+            "もし差し支えなければ",
+            "もしも差し支えなければ",
+            "差し支えございませんでしたら"
+          ],
+          "action": "flag",
+          "category": "質問"
+        },
+        {
+          "expression": "よろしければ",
+          "variants": [
+            "もしよろしければ",
+            "宜しければ",
+            "よろしかったら",
+            "ご都合よろしければ",
+            "よければ",
+            "よかったら",
+            "もしよかったら"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご都合がよろしければ",
+          "variants": [
+            "ご都合のよろしい時に",
+            "ご都合の良い時に",
+            "ご都合がよろしい際に"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "可能であれば",
+          "variants": [
+            "もし可能であれば",
+            "もしも可能であれば",
+            "もし可能でしたら",
+            "可能でしたら"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "お手隙の際に",
+          "variants": [
+            "お手すきの際に",
+            "お手すきの際で構いませんので",
+            "お手すきでしたら",
+            "お手すきでしょうか",
+            "お手すきの際",
+            "お手隙"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご面倒でなければ",
+          "variants": [
+            "もしそちらがご面倒でなければ",
+            "ご面倒かとは存じますが",
+            "ご面倒とは存じますが",
+            "お手間でなければ"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご面倒をおかけしますが",
+          "variants": [
+            "ご面倒をおかけいたしますが",
+            "ご面倒をお掛けしますが",
+            "ご面倒をおかけして"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご迷惑をおかけしますが",
+          "variants": [
+            "ご迷惑をおかけいたしますが",
+            "ご迷惑とは存じますが",
+            "ご迷惑をおかけいたしまして",
+            "たびたびご迷惑をお掛けし"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご迷惑でなければ",
+          "variants": [
+            "もしご迷惑でなければ",
+            "そちらがご迷惑でなければ"
+          ],
+          "action": "flag",
+          "category": "質問"
+        },
+        {
+          "expression": "ご足労をおかけしますが",
+          "variants": [
+            "ご足労をおかけいたしますが",
+            "ご足労おかけして申し訳ございませんが",
+            "ご足労おかけして大変申し訳ございませんが",
+            "ご足労をおかけし恐縮ですが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "申し訳ございませんが",
+          "variants": [
+            "申し訳ありませんが",
+            "大変申し訳ございませんが",
+            "大変申し訳ありませんが",
+            "誠に申し訳ございませんが",
+            "たいへん申し訳ございませんが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "お手間をとらせますが",
+          "variants": [
+            "お手間を取らせてしまい恐れ入りますが",
+            "お手間でなければ",
+            "お手をわずらわせますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "勝手を申しますが",
+          "variants": [
+            "勝手を申しまして大変恐縮ですが",
+            "勝手ながら",
+            "誠に勝手ながら",
+            "誠に勝手ではございますが",
+            "勝手とは存じますが",
+            "勝手な都合を申し上げて恐縮なのですが",
+            "誠に勝手なお願いですが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "こちらの都合で恐れ入りますが",
+          "variants": [
+            "こちらの都合により恐れ入りますが",
+            "こちらの都合ばかりで恐れ入りますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "重ねてのお願いで恐縮ですが",
+          "variants": [
+            "重ね重ね恐縮ですが",
+            "重ね重ねお手数をおかけ致しますが",
+            "重ね重ね大変申し訳ございませんが",
+            "お願いばかりで恐縮ですが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "たびたび申し訳ございませんが",
+          "variants": [
+            "たびたび恐れ入りますが",
+            "度々のご連絡で恐れ入りますが",
+            "たびたびご迷惑をお掛けし",
+            "度々申し訳ございませんが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "催促がましく恐縮ですが",
+          "variants": [
+            "催促がましくて恐縮ですが",
+            "催促するようで恐縮ですが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "お急ぎのところ申し訳ありませんが",
+          "variants": [
+            "お急ぎのところ申し訳ございません",
+            "お急ぎのところ恐れ入りますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "急なお願いで恐れ入りますが",
+          "variants": [
+            "直前に恐れ入りますが",
+            "急なご連絡で恐れ入りますが",
+            "急な〜ですが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "厚かましいお願いですが",
+          "variants": [
+            "厚かましい〜ですが",
+            "厚かましいとは存じますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "ぶしつけなお願いですが",
+          "variants": [
+            "不躾ながら",
+            "ぶしつけな質問で恐れ入りますが",
+            "不躾なお願いですが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "お時間がありましたら",
+          "variants": [
+            "お時間がある時に",
+            "お時間のある時に",
+            "お時間のあるときに",
+            "お時間が許せば",
+            "もし余裕がありましたら"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "ご無理のない範囲で",
+          "variants": [
+            "ご無理のない範囲でご対応いただければ"
+          ],
+          "action": "flag",
+          "category": "依頼"
+        },
+        {
+          "expression": "説明不足で恐縮ですが",
+          "variants": [
+            "私共の説明不足で恐縮なのですが",
+            "私共の説明不足で申し訳ございませんが",
+            "私どもの説明不足だったかもしれませんが",
+            "説明が足りず恐縮ですが",
+            "説明が足りず失礼いたしました",
+            "説明が十分ではなかったかもしれませんが"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "言葉足らずで申し訳ありませんが",
+          "variants": [
+            "言葉足らずで恐縮なのですが",
+            "言葉が足りなかったかもしれませんが",
+            "言葉足らずで失礼いたしました"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "細かいことを申し上げて恐縮ですが",
+          "variants": [
+            "細かなことを申し上げて恐縮ですが",
+            "細かいことを言ってしまい恐縮ですが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "突然ではございますが",
+          "variants": [
+            "突然のご連絡失礼いたしますが",
+            "突然ですが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "早速ですが",
+          "variants": [
+            "さっそくですが",
+            "早速でございますが"
+          ],
+          "action": "strip",
+          "category": "依頼"
+        },
+        {
+          "expression": "念のため",
+          "variants": [
+            "念のため伺いたいのですが",
+            "念のため確認させていただきたいのですが",
+            "念のためご連絡いたしますが",
+            "念のためご確認いただけますと幸いです"
+          ],
+          "action": "flag",
+          "category": "質問"
+        },
+        {
+          "expression": "お力になれることがあれば",
+          "variants": [
+            "私でお力になれることがあれば",
+            "私にできることがあれば",
+            "もし私にできることがあれば"
+          ],
+          "action": "keep",
+          "category": "依頼"
+        },
+        {
+          "expression": "失礼ですが",
+          "variants": [
+            "大変失礼ですが",
+            "失礼とは存じますが",
+            "失礼ながら",
+            "失礼いたしますが"
+          ],
+          "action": "strip",
+          "category": "質問"
+        },
+        {
+          "expression": "つかぬことをお伺いしますが",
+          "variants": [
+            "つかぬことを伺いますが",
+            "つかぬことをお尋ねしますが"
+          ],
+          "action": "strip",
+          "category": "質問"
+        },
+        {
+          "expression": "立ち入ったことを伺いますが",
+          "variants": [
+            "立ち入ったことをお尋ねしますが",
+            "立ち入ったことを伺うようですが",
+            "立ち入ったことをお伺いしますが"
+          ],
+          "action": "strip",
+          "category": "質問"
+        },
+        {
+          "expression": "お尋ねしてもよろしいでしょうか",
+          "variants": [
+            "お尋ねしてよろしいでしょうか",
+            "少しお尋ねしたいのですが",
+            "お尋ねしたいのですが"
+          ],
+          "action": "strip",
+          "category": "質問"
+        },
+        {
+          "expression": "お伺いしたいことがあるのですが",
+          "variants": [
+            "おうかがいしたいことがあるのですが",
+            "お伺いしたいのですが",
+            "お伺いしたいことがございまして"
+          ],
+          "action": "strip",
+          "category": "質問"
+        },
+        {
+          "expression": "お時間が許せば",
+          "variants": [
+            "お時間が許しましたら"
+          ],
+          "action": "flag",
+          "category": "質問"
+        },
+        {
+          "expression": "あいにくですが",
+          "variants": [
+            "あいにく",
+            "あいにくではございますが",
+            "生憎ですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "せっかくですが",
+          "variants": [
+            "せっかくではございますが",
+            "せっかくでございますが",
+            "せっかくのお申し出ですが",
+            "せっかくの申し出ではございますが",
+            "せっかくお声がけいただいたのですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "残念ながら",
+          "variants": [
+            "残念ですが",
+            "誠に残念ながら",
+            "残念ではございますが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "ご期待に添えず申し訳ありませんが",
+          "variants": [
+            "ご期待に添えず恐縮ですが",
+            "ご期待に添えず恐縮ではございますが",
+            "ご期待に添えず大変申し訳ございませんが",
+            "ご期待に添えず",
+            "ご希望に添えず",
+            "ご意向に沿えず申し訳ありませんが",
+            "ご要望に添えず申し訳ありませんが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "心苦しいのですが",
+          "variants": [
+            "心苦しい限りではございますが",
+            "心苦しいことではございますが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "申し上げにくいのですが",
+          "variants": [
+            "大変申し上げにくいのですが",
+            "誠に申し上げにくいのですが",
+            "誠に申しあげにくいのですが",
+            "大変申し上げにくいことですが",
+            "言いづらいのですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "お気持ちはありがたいのですが",
+          "variants": [
+            "お気持ちは分かりますが",
+            "お気持ちはとてもよくわかるのですが",
+            "大変ありがたいお話なのですが",
+            "ありがたいお話ですが",
+            "大変ありがたいのですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "身に余るお話ですが",
+          "variants": [
+            "身に余るお話ではございますが",
+            "身にあまるお話ですが",
+            "身に余るお言葉ですが",
+            "身に余るお話、光栄なのですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "お役に立ちたいのですが",
+          "variants": [
+            "お役に立ちたいのは山々ですが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "私どもの力不足で",
+          "variants": [
+            "私どもの力不足により",
+            "私どもの力不足で、たいへん恐縮なのですが",
+            "私どもの力不足で申し訳ございませんが"
+          ],
+          "action": "strip",
+          "category": "断り"
+        },
+        {
+          "expression": "差し出がましいようですが",
+          "variants": [
+            "差し出がましいとは存じますが",
+            "差し出がましいようで恐縮ですが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "お言葉を返すようですが",
+          "variants": [
+            "お言葉を返すようで恐縮ですが",
+            "お言葉を返すようで恐縮なのですが",
+            "お言葉ではございますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "僭越ながら",
+          "variants": [
+            "僭越ではございますが",
+            "せんえつながら",
+            "僭越とは存じますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "出過ぎたことを申しますが",
+          "variants": [
+            "出過ぎたことを言うようですが",
+            "出過ぎたことを申し上げますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "失礼を承知で申し上げますが",
+          "variants": [
+            "無礼を承知で申しあげますが",
+            "ご無礼を承知のうえで",
+            "失礼を承知で申しますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "余計なこととは存じますが",
+          "variants": [
+            "余計なこととは思いますが",
+            "余計なお世話とは存じますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "私の考えすぎかもしれませんが",
+          "variants": [
+            "私の考え過ぎかもしれませんが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "見解が分かれる点かと存じますが",
+          "variants": [
+            "見解の分かれるところかと存じますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "おっしゃる通りですが",
+          "variants": [
+            "確かにおっしゃるとおりですが",
+            "確かに、おっしゃることはごもっともなのですが",
+            "おっしゃることはわかりますが",
+            "おっしゃることは重々承知しておりますが",
+            "おっしゃることは重々理解しておりますが",
+            "おっしゃる通りかと存じますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "老婆心ながら",
+          "variants": [
+            "老婆心ながら言わせてもらえば",
+            "老婆心から申し上げますが"
+          ],
+          "action": "strip",
+          "category": "反論"
+        },
+        {
+          "expression": "私見ではございますが",
+          "variants": [
+            "私見ですが",
+            "あくまで私見ですが"
+          ],
+          "action": "keep",
+          "category": "反論"
+        },
+        {
+          "expression": "ご不便をおかけしますが",
+          "variants": [
+            "ご不便をおかけいたしまして",
+            "ご不便をおかけいたしますが"
+          ],
+          "action": "strip",
+          "category": "謝罪"
+        },
+        {
+          "expression": "お待たせして",
+          "variants": [
+            "お待たせいたしまして",
+            "お待たせしておりますが"
+          ],
+          "action": "strip",
+          "category": "謝罪"
+        },
+        {
+          "expression": "お取り込み中のところ失礼いたします",
+          "variants": [
+            "お話中に恐縮ですが",
+            "お仕事中に恐れ入りますが",
+            "お食事中に恐れ入りますが",
+            "ご歓談中に恐れ入りますが"
+          ],
+          "action": "strip",
+          "category": "謝罪"
+        },
+        {
+          "expression": "おかげさまで",
+          "variants": [
+            "お陰様で"
+          ],
+          "action": "strip",
+          "category": "その他"
+        },
+        {
+          "expression": "ご心配かもしれませんが",
+          "variants": [
+            "ご心配をおかけしておりますが"
+          ],
+          "action": "strip",
+          "category": "その他"
+        }
+      ],
+      "info_level": []
+    },
+    "task_verbs": {
+      "label_ja": "明確な依頼表現",
+      "description": "Expressions that state a clear ask — the prompt actually names an action. Presence of one of these is positive signal for the instruction-clarity subscore.",
+      "entries": [
+        {
+          "expression": "作成",
+          "variants": [
+            "作成して",
+            "作成してください",
+            "作成をお願いします",
+            "作成せよ",
+            "作成すること",
+            "作る",
+            "作って",
+            "作ってください",
+            "つくって",
+            "作製",
+            "制作",
+            "製作",
+            "策定",
+            "起草"
+          ]
+        },
+        {
+          "expression": "生成",
+          "variants": [
+            "生成して",
+            "生成してください",
+            "生成する",
+            "生成させる",
+            "作り出して",
+            "産み出して"
+          ]
+        },
+        {
+          "expression": "要約",
+          "variants": [
+            "要約して",
+            "要約してください",
+            "要約して下さい",
+            "要約を作成してください",
+            "要約せよ",
+            "要点をまとめて",
+            "サマリーにして",
+            "かいつまんで"
+          ]
+        },
+        {
+          "expression": "まとめる",
+          "variants": [
+            "まとめて",
+            "まとめてください",
+            "まとめてもらう",
+            "取りまとめて",
+            "とりまとめ",
+            "集約して",
+            "一本化して"
+          ]
+        },
+        {
+          "expression": "教える",
+          "variants": [
+            "教えて",
+            "教えてください",
+            "教えて下さい",
+            "教えてほしい",
+            "おしえて",
+            "ご教示ください",
+            "ご教示いただけますでしょうか",
+            "ご教授ください",
+            "整理して教えてください"
+          ]
+        },
+        {
+          "expression": "説明",
+          "variants": [
+            "説明して",
+            "説明してください",
+            "説明せよ",
+            "ご説明ください",
+            "わかりやすく説明して"
+          ]
+        },
+        {
+          "expression": "解説",
+          "variants": [
+            "解説して",
+            "解説してください",
+            "解説をつけること",
+            "解説する文章を出力してください"
+          ]
+        },
+        {
+          "expression": "抽出",
+          "variants": [
+            "抽出して",
+            "抽出してください",
+            "抽出し",
+            "取り出して",
+            "洗い出して",
+            "ぬき出して",
+            "書き出して"
+          ]
+        },
+        {
+          "expression": "分類",
+          "variants": [
+            "分類して",
+            "分類してください",
+            "分類分けして",
+            "分けて",
+            "分けてください",
+            "グルーピングして",
+            "ジャンル別にして",
+            "ジャンル分けして",
+            "カテゴリ分けして"
+          ]
+        },
+        {
+          "expression": "翻訳",
+          "variants": [
+            "翻訳して",
+            "翻訳してください",
+            "訳して",
+            "英訳して",
+            "和訳して",
+            "日本語に訳して"
+          ]
+        },
+        {
+          "expression": "校正",
+          "variants": [
+            "校正して",
+            "校正してください",
+            "校正してもらう",
+            "誤字脱字をチェックして"
+          ]
+        },
+        {
+          "expression": "推敲",
+          "variants": [
+            "推敲して",
+            "推敲してください",
+            "練り直して"
+          ]
+        },
+        {
+          "expression": "添削",
+          "variants": [
+            "添削して",
+            "添削してください",
+            "てんさくして"
+          ]
+        },
+        {
+          "expression": "修正",
+          "variants": [
+            "修正して",
+            "修正してください",
+            "直して",
+            "書き直して",
+            "訂正して",
+            "なおして"
+          ]
+        },
+        {
+          "expression": "書き換え",
+          "variants": [
+            "書き換えて",
+            "書き換えてください",
+            "かきかえて",
+            "リライトして",
+            "小学生でもわかるように書き換えてください"
+          ]
+        },
+        {
+          "expression": "言い換え",
+          "variants": [
+            "言い換えて",
+            "言い換えてください",
+            "いいかえて",
+            "別の表現にして",
+            "パラフレーズして"
+          ]
+        },
+        {
+          "expression": "比較",
+          "variants": [
+            "比較して",
+            "比較してください",
+            "比較分析してください",
+            "比べて",
+            "対比して"
+          ]
+        },
+        {
+          "expression": "分析",
+          "variants": [
+            "分析して",
+            "分析してください",
+            "解析して",
+            "比較分析して"
+          ]
+        },
+        {
+          "expression": "提案",
+          "variants": [
+            "提案して",
+            "提案してください",
+            "提案をお願いします",
+            "提案を3つ挙げてください",
+            "ご提案ください",
+            "案を出して"
+          ]
+        },
+        {
+          "expression": "列挙",
+          "variants": [
+            "列挙して",
+            "列挙してください",
+            "順番に列挙",
+            "れっきょして",
+            "並べて"
+          ]
+        },
+        {
+          "expression": "リストアップ",
+          "variants": [
+            "リストアップして",
+            "リストアップしてください",
+            "リストして",
+            "リストにして",
+            "一覧にして"
+          ]
+        },
+        {
+          "expression": "変換",
+          "variants": [
+            "変換して",
+            "変換してください",
+            "〜にして",
+            "〜に変えて",
+            "Pythonコードにして",
+            "JSON形式にして"
+          ]
+        },
+        {
+          "expression": "レビュー",
+          "variants": [
+            "レビューして",
+            "レビューしてください",
+            "チェックして",
+            "見てください"
+          ]
+        },
+        {
+          "expression": "評価",
+          "variants": [
+            "評価して",
+            "評価してください",
+            "評価しその理由も記載",
+            "採点して",
+            "点数をつけて"
+          ]
+        },
+        {
+          "expression": "検証",
+          "variants": [
+            "検証して",
+            "検証してください",
+            "確かめて",
+            "カウントしてください",
+            "条件を満たしているか確認してください"
+          ]
+        },
+        {
+          "expression": "確認",
+          "variants": [
+            "確認して",
+            "確認してください",
+            "ご確認ください",
+            "ご確認のほどお願いいたします"
+          ]
+        },
+        {
+          "expression": "調査",
+          "variants": [
+            "調べて",
+            "調べてください",
+            "調査して",
+            "調査してください",
+            "リサーチして"
+          ]
+        },
+        {
+          "expression": "計算",
+          "variants": [
+            "計算して",
+            "計算してください",
+            "算出して",
+            "求めて"
+          ]
+        },
+        {
+          "expression": "集計",
+          "variants": [
+            "集計して",
+            "集計してください",
+            "平均を出してください",
+            "月別に集計する",
+            "合計して"
+          ]
+        },
+        {
+          "expression": "実装",
+          "variants": [
+            "実装して",
+            "実装してください",
+            "コードを書いてください",
+            "マクロを作成してください",
+            "スクリプトを書いて"
+          ]
+        },
+        {
+          "expression": "設計",
+          "variants": [
+            "設計して",
+            "設計してください",
+            "構成を考えて",
+            "構築して"
+          ]
+        },
+        {
+          "expression": "出力",
+          "variants": [
+            "出力して",
+            "出力してください",
+            "出力せよ",
+            "〜で出力",
+            "出してください",
+            "だして"
+          ]
+        },
+        {
+          "expression": "書く",
+          "variants": [
+            "書いて",
+            "書いてください",
+            "記述してください",
+            "記してください",
+            "書き出してください",
+            "執筆して"
+          ]
+        },
+        {
+          "expression": "考える",
+          "variants": [
+            "考えて",
+            "考えてください",
+            "アイデアを出して",
+            "案だしして",
+            "一緒に考えたい",
+            "構想して"
+          ]
+        },
+        {
+          "expression": "企画",
+          "variants": [
+            "企画して",
+            "企画してください",
+            "企画案を作成して",
+            "企画書のたたき台を作ってください"
+          ]
+        },
+        {
+          "expression": "立案",
+          "variants": [
+            "立案して",
+            "立案してください",
+            "プランニングして",
+            "計画して",
+            "考案して"
+          ]
+        },
+        {
+          "expression": "整理",
+          "variants": [
+            "整理して",
+            "整理してください",
+            "整理して教えてください",
+            "表に整理して下さい",
+            "段階的に整理",
+            "整頓して"
+          ]
+        },
+        {
+          "expression": "構造化",
+          "variants": [
+            "構造化して",
+            "構造化してください",
+            "体系的に整理して"
+          ]
+        },
+        {
+          "expression": "回答",
+          "variants": [
+            "回答して",
+            "回答してください",
+            "答えて",
+            "答えてください",
+            "返答して"
+          ]
+        },
+        {
+          "expression": "質問",
+          "variants": [
+            "質問して",
+            "質問してください",
+            "聞いてください",
+            "尋ねて",
+            "ヒアリングして"
+          ]
+        },
+        {
+          "expression": "改善",
+          "variants": [
+            "改善して",
+            "改善してください",
+            "改善案を出して",
+            "良くして"
+          ]
+        },
+        {
+          "expression": "ブラッシュアップ",
+          "variants": [
+            "ブラッシュアップして",
+            "ブラッシュアップして作成",
+            "磨き上げて"
+          ]
+        },
+        {
+          "expression": "追加",
+          "variants": [
+            "追加して",
+            "追加してください",
+            "加えて",
+            "挿入して",
+            "列を追加してください",
+            "スライドを追加してください"
+          ]
+        },
+        {
+          "expression": "削除",
+          "variants": [
+            "削除して",
+            "削除してください",
+            "除いて",
+            "省いて",
+            "文字を削除して"
+          ]
+        },
+        {
+          "expression": "検討",
+          "variants": [
+            "検討して",
+            "検討してください",
+            "ご検討ください"
+          ]
+        },
+        {
+          "expression": "表示",
+          "variants": [
+            "表示して",
+            "表示してください",
+            "カラースケールで表示してください",
+            "見せて"
+          ]
+        },
+        {
+          "expression": "膨らませる",
+          "variants": [
+            "膨らませて",
+            "膨らませてください",
+            "●●文字程度に膨らませてください",
+            "加筆して",
+            "肉付けして"
+          ]
+        },
+        {
+          "expression": "補完",
+          "variants": [
+            "補完して",
+            "補完してもらう",
+            "補足して",
+            "補足を添えてください"
+          ]
+        },
+        {
+          "expression": "引用",
+          "variants": [
+            "引用して",
+            "引用してください",
+            "出典を示して"
+          ]
+        },
+        {
+          "expression": "明記",
+          "variants": [
+            "明記して",
+            "明記してください",
+            "記載して",
+            "記載する",
+            "冒頭に記載する"
+          ]
+        },
+        {
+          "expression": "読み込む",
+          "variants": [
+            "読み込んで",
+            "読み込ませる",
+            "読み取って",
+            "読んで"
+          ]
+        },
+        {
+          "expression": "編集",
+          "variants": [
+            "編集して",
+            "編集してください",
+            "整形して",
+            "整形したい"
+          ]
+        },
+        {
+          "expression": "〜してください",
+          "variants": [
+            "してください",
+            "して下さい",
+            "してくださいませ",
+            "して頂けますよう",
+            "くださいませ"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜して（プレーンて形）",
+          "variants": [
+            "して",
+            "してね",
+            "してよ",
+            "教えて",
+            "作って",
+            "まとめて",
+            "出して"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜してほしい",
+          "variants": [
+            "してほしい",
+            "して欲しい",
+            "してほしいです",
+            "〜のときにこうしてほしい",
+            "こういう場合はこうしてほしい"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜をお願いします",
+          "variants": [
+            "お願いします",
+            "お願いいたします",
+            "お願い申し上げます",
+            "お願いしたく存じます",
+            "何卒お願いいたします",
+            "作成をお願いします",
+            "提案をお願いします"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜していただけますか",
+          "variants": [
+            "していただけますか",
+            "していただけますでしょうか",
+            "していただけないでしょうか",
+            "いただけると幸いです",
+            "お願いできますでしょうか",
+            "していただけるとありがたいのですが",
+            "ご協力いただけますよう"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜してもらえますか",
+          "variants": [
+            "してもらえますか",
+            "してもらえませんか",
+            "してもらう",
+            "校正してもらった",
+            "まとめてもらう"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜せよ",
+          "variants": [
+            "せよ",
+            "しろ",
+            "しなさい",
+            "述べよ",
+            "示せ",
+            "挙げよ"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜すること",
+          "variants": [
+            "すること",
+            "〜のこと",
+            "抽出し解説をつけること",
+            "〜とする",
+            "〜は禁止する",
+            "守ること"
+          ],
+          "form": "constraint_ending"
+        },
+        {
+          "expression": "〜を出力",
+          "variants": [
+            "を出力",
+            "で出力",
+            "を出力して",
+            "を出力してください",
+            "出力は〜にしてください"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "〜を挙げて",
+          "variants": [
+            "挙げて",
+            "挙げてください",
+            "あげて",
+            "3つ挙げてください",
+            "15種類以上を順番に列挙"
+          ],
+          "form": "request_ending"
+        },
+        {
+          "expression": "名詞＋する（サ変）",
+          "variants": [
+            "要約する",
+            "作成する",
+            "抽出する",
+            "分類する",
+            "校正する",
+            "翻訳する",
+            "分析する",
+            "提案する",
+            "出力する",
+            "表現する"
+          ],
+          "form": "sahen"
+        },
+        {
+          "expression": "〜しないでください",
+          "variants": [
+            "しないでください",
+            "入れないでください",
+            "書かないでください",
+            "使わない",
+            "使用禁止",
+            "は禁止する",
+            "含めない"
+          ],
+          "form": "negative_instruction"
+        }
+      ],
+      "info_level": []
+    },
+    "format_markers": {
+      "label_ja": "出力形式マーカー",
+      "description": "Expressions specifying the shape of the answer. Presence is positive signal for the output-indicator subscore.",
+      "kind_key": {
+        "structure": "Shape or arrangement of the output.",
+        "length": "Amount of output.",
+        "tone": "Register, vocabulary level, or reader targeting.",
+        "language": "Which natural language to answer in."
+      },
+      "entries": [
+        {
+          "expression": "箇条書きで",
+          "variants": [
+            "箇条書き",
+            "箇条書きにして",
+            "箇条書きで出力して",
+            "箇条書きで記載",
+            "かじょうがきで",
+            "要点を箇条書きに",
+            "簡潔に箇条書きにして",
+            "箇条書き形式",
+            "リスト形式で",
+            "リストで出力",
+            "ブレット形式",
+            "・で列挙",
+            "- で列挙"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "表形式で",
+          "variants": [
+            "表で",
+            "表形式",
+            "表にして",
+            "表に整理して下さい",
+            "一覧表で",
+            "テーブルで",
+            "テーブルにリストしてください",
+            "マークダウンの表で出力",
+            "表形式のデータを出力"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "マークダウンで",
+          "variants": [
+            "マークダウン形式で",
+            "マークダウン記法で",
+            "マークダウンで出力",
+            "Markdown記法",
+            "MD形式で",
+            "markdownで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "JSON形式で",
+          "variants": [
+            "JSON形式にして",
+            "JSONで出力",
+            "JSON形式で出力してください",
+            "ジェイソン形式で",
+            "json形式で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "CSV形式で",
+          "variants": [
+            "CSVで出力",
+            "CSV形式で出力",
+            "CSVファイルに保存する",
+            "カンマ区切りで",
+            "csv形式で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "HTMLで",
+          "variants": [
+            "HTML形式で",
+            "HTMLで出力",
+            "HTMLタグでだして",
+            "htmlで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "Mermaid（マーメイド）で",
+          "variants": [
+            "マーメイドで出力",
+            "Mermaid記法で",
+            "mermaidで",
+            "図で表現して"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "XMLタグで",
+          "variants": [
+            "XML形式で",
+            "タグで囲んで",
+            "xmlタグで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "コードブロックで",
+          "variants": [
+            "コードブロックに入れて出力して",
+            "コードブロックで",
+            "コードのみ",
+            "コードだけ"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "見出しをつけて",
+          "variants": [
+            "見出し付きで",
+            "見出しを使って生成",
+            "見出し＋本文のセットで",
+            "見出し付きの箇条書きで",
+            "A4サイズ1P見出し付きで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "番号付きで",
+          "variants": [
+            "番号付きリストで",
+            "ナンバリングして",
+            "通し番号で",
+            "連番で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "ステップごとに",
+          "variants": [
+            "ステップバイステップで",
+            "Step by Stepで考える",
+            "手順で",
+            "手順ごとに",
+            "段階的に",
+            "段階的に整理",
+            "順を追って"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "〜の順で",
+          "variants": [
+            "順番に",
+            "順に",
+            "概要→メリット→デメリット→結論の順で",
+            "結論から",
+            "結論を先に"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "〜構成で",
+          "variants": [
+            "3章構成で",
+            "章立てで",
+            "セクション構成で",
+            "3つのセクションで出力",
+            "構成は以下の通り",
+            "以下の構成で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "3点で／〜個",
+          "variants": [
+            "3つ",
+            "3つ挙げて",
+            "3つの要点に",
+            "3〜5つ程度の箇条書きで",
+            "15種類以上",
+            "〜個",
+            "〜件",
+            "〜項目",
+            "1つだけ",
+            "ハッシュタグ3つ"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "構造化して",
+          "variants": [
+            "グルーピングして",
+            "分類分けして",
+            "ジャンル別にして",
+            "ジャンル分けして",
+            "カテゴリごとに",
+            "階層で",
+            "入れ子で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "会話形式で",
+          "variants": [
+            "対話形式で",
+            "Q&A形式で",
+            "インタビュー風に",
+            "ロールプレイング風に",
+            "台本形式で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "以下のフォーマットで",
+          "variants": [
+            "以下の形式で",
+            "次のフォーマットで",
+            "フォーマットに従って",
+            "テンプレートに沿って",
+            "下記の形式を厳守して",
+            "忠実に守って"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "太字で強調して",
+          "variants": [
+            "太字にして",
+            "強調して",
+            "斜体で",
+            "取り消し線で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "引用形式で",
+          "variants": [
+            "ブロック引用で",
+            "引用符で囲んで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "冒頭に記載して",
+          "variants": [
+            "最初に記載",
+            "先頭に",
+            "末尾に",
+            "最後にまとめを"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "改行して",
+          "variants": [
+            "2〜3行ごとに改行",
+            "適宜改行を入れて",
+            "段落を分けて",
+            "1行空けて"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "全角記号で",
+          "variants": [
+            "箇条書き先頭のマークは日本語の全角の英数記号を使って",
+            "半角で",
+            "全角で",
+            "記号は・を使って"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "関数式で",
+          "variants": [
+            "数式で",
+            "計算式で",
+            "SQLクエリで",
+            "関数で"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "前置きなしで",
+          "variants": [
+            "説明や解説は入れないでください",
+            "前後に説明や解説は入れないでください",
+            "前置き不要",
+            "挨拶不要",
+            "余計な説明は不要",
+            "結果だけ出して"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "必ず〜を含めて",
+          "variants": [
+            "必ず〜を含める",
+            "〜を明記して",
+            "担当者・期限を明記",
+            "〜を自然に含める",
+            "〜は省かないで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "プレゼン資料の形式で",
+          "variants": [
+            "スライド形式で",
+            "プレゼンテーションを作成",
+            "議事録の形式で",
+            "メール文の形式で",
+            "企画書の形式で",
+            "A4サイズ1Pで"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "縦横比・レイアウト指定",
+          "variants": [
+            "縦：横=1：2",
+            "レイアウトは〜",
+            "2列で",
+            "左右に並べて"
+          ],
+          "kind": "structure"
+        },
+        {
+          "expression": "〜文字以内で",
+          "variants": [
+            "文字以内",
+            "字以内",
+            "200文字以内で",
+            "100文字以内で",
+            "300文字以内",
+            "15文字以内",
+            "各項目200字以内",
+            "全体で1,000字以内",
+            "を超えないで",
+            "上限〜字"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "〜文字程度で",
+          "variants": [
+            "文字程度",
+            "字程度",
+            "200字程度",
+            "400文字程度",
+            "130文字程度",
+            "文字前後",
+            "くらいで",
+            "ほどで"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "〜文字で",
+          "variants": [
+            "300文字で作成",
+            "200字で",
+            "500字で",
+            "文字ちょうどで",
+            "きっかり〜文字で"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "〜文字以上で",
+          "variants": [
+            "文字以上",
+            "字以上",
+            "2,000文字以上",
+            "3,000文字以上",
+            "下限〜字",
+            "最低〜文字"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "〜文字〜〜文字で（範囲）",
+          "variants": [
+            "500字〜600字",
+            "500〜600文字",
+            "200〜300文字以内で",
+            "〜から〜文字",
+            "上限と下限を指定"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "〜行以内で",
+          "variants": [
+            "各項目3行以内",
+            "3行で",
+            "〜行程度",
+            "1行で"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "一文で",
+          "variants": [
+            "1文で",
+            "短文で",
+            "一言で",
+            "短文でわかりやすく",
+            "ひとことで"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "簡潔に",
+          "variants": [
+            "簡潔な言葉で",
+            "端的に",
+            "短く",
+            "要点のみ",
+            "項目のみ",
+            "コンパクトに",
+            "かんけつに"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "詳しく",
+          "variants": [
+            "詳細に",
+            "具体的に",
+            "具体的に記載",
+            "掘り下げて",
+            "丁寧に説明して"
+          ],
+          "kind": "length"
+        },
+        {
+          "expression": "です・ます調で",
+          "variants": [
+            "ですます調で",
+            "ですます調",
+            "敬体で",
+            "丁寧語で",
+            "丁寧な文体で",
+            "丁寧なメール文で",
+            "です・ます調"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "だ・である調で",
+          "variants": [
+            "である調で",
+            "だ調で",
+            "常体で",
+            "だ・である調",
+            "である体で"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "敬語で",
+          "variants": [
+            "丁寧な言葉で",
+            "失礼のない内容で",
+            "丁寧に",
+            "かしこまった表現で",
+            "ビジネス敬語で"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "小学生にもわかるように",
+          "variants": [
+            "小学生でもわかるように",
+            "小学３年生でも理解できるように",
+            "子供でもわかるように",
+            "中学生でもわかるように",
+            "高校生にもわかるように",
+            "平易な言葉で",
+            "やさしい言葉で"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "専門用語を使わずに",
+          "variants": [
+            "専門用語を避け",
+            "専門用語は避ける",
+            "専門用語を減らして",
+            "専門用語は最小限",
+            "専門用語には1文の補足を添えてください",
+            "難しい言葉を使わないで"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "〜向けに",
+          "variants": [
+            "初心者向けに",
+            "初心者でも理解できるように",
+            "AI初心者の社会人向けに",
+            "決裁者向けに",
+            "職員向けに",
+            "ビジネス向けの文章に",
+            "対象読者は〜"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "わかりやすく",
+          "variants": [
+            "分かりやすく",
+            "読みやすい文体で",
+            "わかりやすい文章で",
+            "理解しやすいように",
+            "伝わりやすく"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "親しみやすく",
+          "variants": [
+            "カジュアルに",
+            "フランクに",
+            "丁寧だが堅すぎない",
+            "堅すぎない",
+            "爽やか",
+            "ナチュラル",
+            "リラックスした雰囲気で"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "〜として（役割指定）",
+          "variants": [
+            "あなたは〇〇の専門家である",
+            "〇〇として受け答えをします",
+            "〜になりきって",
+            "プロの〜として",
+            "〜の立場で"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "推測を含めないで",
+          "variants": [
+            "推測や解釈は含めない",
+            "発言内容のみに基づく",
+            "事実のみ",
+            "根拠のない主張は禁止",
+            "データがない項目は「要調査」と明記"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "絵文字を含めて",
+          "variants": [
+            "絵文字あり",
+            "絵文字なしで",
+            "ハッシュタグをつけて",
+            "顔文字を入れて"
+          ],
+          "kind": "tone"
+        },
+        {
+          "expression": "日本語で",
+          "variants": [
+            "日本語で出力",
+            "日本語で回答してください",
+            "回答は日本語で",
+            "日本語でお願いします",
+            "にほんごで"
+          ],
+          "kind": "language"
+        },
+        {
+          "expression": "英語で",
+          "variants": [
+            "英語で書いてください",
+            "英語で出力",
+            "英文で",
+            "英訳して"
+          ],
+          "kind": "language"
+        },
+        {
+          "expression": "日本語と英語で",
+          "variants": [
+            "日本語と英語で書いてください",
+            "日英併記で",
+            "対訳で",
+            "両方の言語で"
+          ],
+          "kind": "language"
+        }
+      ],
+      "info_level": []
+    }
+  }
+}
