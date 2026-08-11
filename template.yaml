@@ -3,27 +3,50 @@ Transform: AWS::Serverless-2016-10-31
 Description: Haruka - prompt analysis tool (Day 1 skeleton)
 
 Parameters:
-  # The judge model id lives in exactly ONE place. It is needed twice — the
-  # Lambda reads it at runtime, and IAM names it in the resource ARN — and
-  # two literals are two things that can drift apart. A parameter makes the
-  # second one a reference to the first, so a model swap is a one-line edit
-  # that cannot leave the permission pointing at the old model.
+  # ONE MODEL, TWO IDENTIFIERS. Probed live 2026-08-12 in ap-northeast-1:
   #
-  # Quoted because the id ends in ":0". Bare YAML would still parse it (a
-  # colon only splits a key when a SPACE follows it), but this string gets
-  # copy-pasted a lot and one stray space would silently turn it into a
+  #   * Claude Haiku 4.5 in Tokyo is INFERENCE_PROFILE only — it has no
+  #     ON_DEMAND inference type, so Converse cannot be called on the bare
+  #     foundation-model id at all.
+  #   * The Japan-domestic profile jp.anthropic.claude-haiku-4-5-... routes
+  #     between ap-northeast-1 and ap-northeast-3 and is what Converse needs.
+  #   * CountTokens REJECTS that profile —
+  #       ValidationException: The provided model doesn't support counting tokens
+  #     — and works only on the bare foundation-model id.
+  #
+  # So the two APIs need two different strings for the same model. This is not
+  # duplication that should be collapsed; collapsing it breaks one of the two
+  # calls. Each parameter is still referenced everywhere its value is needed
+  # (env var AND iam ARN), so a model swap remains a one-line edit per path.
+  #
+  # Both quoted because the ids end in ":0". Bare YAML would still parse them
+  # (a colon only splits a key when a SPACE follows it), but these strings get
+  # copy-pasted a lot and one stray space would silently turn one into a
   # nested map. Quotes remove the question.
-  JudgeModelId:
+  CountModelId:
     Type: String
     Default: "anthropic.claude-haiku-4-5-20251001-v1:0"
     Description: >-
-      Bedrock model id used for token counting and (from Day 3) judging.
-      Verified live Day 2: this id supports CountTokens on bedrock-runtime
-      in Tokyo (29 EN / 47 JA).
+      Bare foundation-model id, used ONLY for bedrock:CountTokens. Verified
+      live Day 2 (29 EN / 47 JA). Converse rejects this id — Haiku 4.5 has no
+      ON_DEMAND inference type in Tokyo.
+  JudgeModelId:
+    Type: String
+    Default: "jp.anthropic.claude-haiku-4-5-20251001-v1:0"
+    Description: >-
+      Japan-domestic inference profile, used ONLY for Converse (the judge).
+      Routes ap-northeast-1 + ap-northeast-3. CountTokens rejects this id with
+      ValidationException: The provided model doesn't support counting tokens.
 
 Globals:
   Function:
-    Timeout: 10
+    # 29, not 10: /analyze makes a real Converse call (up to 1,500 output
+    # tokens) on top of a possible cold start, and 10s would time out the
+    # Lambda before the judge finished — surfacing as a 502 that blames the
+    # model for our own deadline. 29 is the ceiling worth setting: API Gateway
+    # cuts the connection at 29s regardless, so anything higher only lets the
+    # function keep burning after the caller has already been told it failed.
+    Timeout: 29
     # 512, not 128: on Lambda, memory is the CPU dial — you cannot buy cores
     # directly. More CPU means the cold-start import of fastapi/pydantic-core
     # finishes sooner, so the slowest request gets faster even though the
@@ -40,8 +63,15 @@ Resources:
         Environment:
           Variables:
             # Decision 6: zero hardcoded model names in code. The code reads
-            # this variable; the template declares its value — so changing
-            # judge models is a template change, not a code change.
+            # these variables; the template declares their values — so
+            # changing models is a template change, not a code change.
+            #
+            # Two variables because the two Bedrock APIs need two identifiers
+            # for the same model (see Parameters). app.py's counting functions
+            # read COUNT_MODEL_ID; judge.invoke_judge reads JUDGE_MODEL_ID.
+            # Swapping one into the other's call site is a ValidationException,
+            # not a silent degradation — which is the good outcome.
+            COUNT_MODEL_ID: !Ref CountModelId
             JUDGE_MODEL_ID: !Ref JudgeModelId
             # Without this, tiktoken's first get_encoding() downloads the
             # o200k_base vocabulary from openaipublic.blob.core.windows.net —
@@ -60,23 +90,49 @@ Resources:
           # ever lands here.
           - Version: "2012-10-17"
             Statement:
-              # Least privilege, said precisely: ONE action, on ONE model.
-              # Not bedrock:* (which would include InvokeModel — the ability
-              # to spend money), and not Resource: "*" (which would be every
-              # model in the account). This function only ever asks "how
-              # long is this?", so that is the only verb it holds.
-              # Note the ARN has two colons before foundation-model: token
-              # counting is an account-less service resource.
+              # Least privilege, said precisely: TWO actions, on ONE model.
+              # Not bedrock:* (which would include model management and every
+              # other verb in the service), and not Resource: "*" (which would
+              # be every model in the account). This function counts tokens
+              # and judges prompts, so those are the only two verbs it holds.
               #
-              # !Sub, not a literal: the model id is interpolated from the
-              # JudgeModelId parameter, so the permission follows the env
-              # var automatically. The REGION stays hardcoded on purpose —
-              # Tokyo is locked for all of v1 (§7), and ${AWS::Region} would
-              # quietly let a deploy elsewhere succeed.
-              - Sid: CountTokensOnJudgeModelOnly
+              # THE ACTION FOR CONVERSE IS bedrock:InvokeModel. Verified live
+              # 2026-08-12 against the Converse API reference: "This operation
+              # requires permission for the bedrock:InvokeModel action."
+              # There is NO bedrock:Converse action — Converse is authorised
+              # through InvokeModel. (bedrock:InvokeModelWithResponseStream is
+              # ConverseStream's; we do not stream, so we do not hold it.)
+              #
+              # WHY THREE RESOURCES. Invoking through an inference profile
+              # needs permission on the profile AND on each foundation model
+              # the profile can route to — the profile is a router, not a
+              # substitute for the thing it routes to. jp. spans Tokyo and
+              # Osaka, so both foundation-model ARNs are required or the call
+              # fails in whichever region it happens to land in. That is a
+              # wider grant than one ARN, but it is still exactly one model in
+              # exactly two regions, with no wildcard anywhere.
+              #
+              # Note the colon counts differ, and they are not a typo: the
+              # inference profile is an ACCOUNT-scoped resource (one colon,
+              # then the account id), while foundation models are account-less
+              # service resources (two colons).
+              #
+              # ${AWS::AccountId} rather than the literal account number —
+              # same value, same ARN, but the number stays out of a repo that
+              # is headed for publication.
+              #
+              # Regions stay hardcoded on purpose: Japan is locked for all of
+              # v1 (§7), and ${AWS::Region} would quietly let a deploy
+              # elsewhere succeed against a profile that cannot serve it.
+              - Sid: CountAndJudgeOneModelJapanOnly
                 Effect: Allow
-                Action: bedrock:CountTokens
-                Resource: !Sub "arn:aws:bedrock:ap-northeast-1::foundation-model/${JudgeModelId}"
+                Action:
+                  - bedrock:CountTokens
+                  - bedrock:InvokeModel
+                Resource:
+                  - !Sub "arn:aws:bedrock:ap-northeast-1:${AWS::AccountId}:inference-profile/${JudgeModelId}"
+                  - !Sub "arn:aws:bedrock:ap-northeast-1::foundation-model/${CountModelId}"
+                  - !Sub "arn:aws:bedrock:ap-northeast-3::foundation-model/${CountModelId}"
         Events:
           HelloApi:
             Type: HttpApi
@@ -91,6 +147,15 @@ Resources:
               # query string would land in API Gateway access logs and in
               # browser history — the privacy claim would be false before
               # the code ever ran.
+              Method: post
+          AnalyzeApi:
+            Type: HttpApi
+            Properties:
+              Path: /analyze
+              # Without this event the route does not exist at the door:
+              # API Gateway bounces the request and FastAPI never sees it, so
+              # the 404 comes back in API Gateway's shape, not ours. Adding a
+              # route to app.py is only half of adding a route.
               Method: post
   # --- Day 2 warm-up: the face. Private bucket, CloudFront the only door. ---
 

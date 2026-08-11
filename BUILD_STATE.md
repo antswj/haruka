@@ -1,71 +1,57 @@
 # Haruka — BUILD_STATE
-Date: 2026-08-11 · Day 2 (end)
+Date: 2026-08-12 (small hours) · Day 3 (end)
 
 ## DONE
-- S3 + CloudFront page LIVE (private bucket, OAC sigv4/always, RegionalDomainName,
-  SourceArn-gated policy) — https://dddcab9qeo0cy.cloudfront.net
-- FastAPI + Mangum swap (step ①): /hello parity proven by compact-JSON fingerprint
-- CountTokens verified EMPIRICALLY for Haiku 4.5 on bedrock-runtime (Branch A):
-  29 EN / 47 JA. §16 "newest model" risk row CLOSED
-- Console tokenizer cross-check: JA exact, EN +1 (console-side wrapping; newline
-  ruled out empirically). Count source of truth = CountTokens converse shape. Δ≤1 accepted
-- sam build --use-container adopted (pydantic-core/tiktoken = compiled Rust; Mac arm64
-  wheels die on x86_64 Lambda)
+- /analyze LIVE end-to-end: validate → detect_language → judge (Converse, jp. profile)
+  → parse (fence-strip + strict contract) → 5 JA lints (collapsed) → counts → §8 shape
+- GATES GREEN, both languages:
+  - JA consistency 3×: spread ±0 · EN 3×: spread ±1 (gate ±1)
+  - Calibration: good prompts score high with input_data correctly held low (materials missing)
+  - Jailbreak JA+EN: graded not obeyed — zeros + verdict naming the attack. Fence held
+  - JA native-phrasing eye test: [Anthony's verdict here]
+- JA lints shipped: 5 checks, strip/flag/keep triage, referent-over-vague collapse,
+  frame regex (grammar-closed connectors) — caught ラグジュアリーな感じに with no wordlist entry
+- Judge cards JA+EN final: 0-5 rubric, 10歳 bar, randomized uuid4 fence (no literal fences)
+- Two-Parameter split: CountModelId (plain, CountTokens) / JudgeModelId (jp. profile, Converse)
+- IAM: [CountTokens, InvokeModel] on 3 measured ARNs, zero wildcards, account ID via pseudo-param
 
-## FACTS (verified against live docs/console TODAY)
-- Admin user = rira-admin (record corrected; ARN is the answer key)
-- tiktoken 0.13.0 · fastapi 0.141.1 · mangum 0.21.0 · encoding o200k_base
-- IAM ARN form: arn:aws:bedrock:ap-northeast-1::foundation-model/<id> (two colons, no acct)
-- bedrock-mantle = REAL second Bedrock endpoint (OpenAI/Anthropic-native APIs).
-  Irrelevant to Haruka (Branch A proven). Coach doubted it; live docs overruled coach.
-- Bucket: haruka-sitebucket-n7eti47cklfq
+## FACTS (probed live 2026-08-11/12)
+- Haiku 4.5 Tokyo = INFERENCE_PROFILE only; jp. profile routes ap-northeast-1 + ap-northeast-3
+- CountTokens rejects profile IDs ("doesn't support counting tokens"); Converse rejects plain IDs.
+  Two doors, two keys — permanent
+- No bedrock:Converse IAM action exists — Converse authorizes via InvokeModel
+- system = top-level Converse param, never a message role (boto3 doc misleads)
+- stopReason "max_tokens" = truncated JSON = our cap's fault, distinguished in JudgeOutputError
+- Haiku wraps JSON in ```json fences despite instruction — strict-strip in parse (clean fence only)
+- CloudFormation: defaults apply at parameter BIRTH; existing stacks reuse remembered values.
+  Fix = explicit --parameter-overrides once
 
 ## DECISIONS
-- Validation errors: static bilingual (JA line + EN line), NO language detection in v1 —
-  stacked can't misdetect. Detection idea → Day 3 judge heuristic, errors borrow later
-- MemorySize: 512 (memory buys CPU; faster cold starts) — lands with step ④
-- Privacy: override FastAPI's default 422 handler — Pydantic v2 echoes user text into
-  error bodies. Static body, 400, log length+status only
-- tiktoken: BUNDLE encoding into artifact (TIKTOKEN_CACHE_DIR=/var/task/tiktoken_cache);
-  /tmp only fixes the crash, not the cold-start network fetch. Pin protects the cache hash
+- Badge + meta.region = "jp" / 日本国内 (jp. profile serves Osaka too) — audit-round-3 erratum
+- §8 amended: lints + lang added; unbuilt fields OMITTED not zeroed; §9 scale 0-5, gate ±1
+- Fence-strip: cosmetic wrapper only; everything else still fails the contract loudly
 
-## LESSONS (Day 2 scars, keep)
-- cd takes one path; angle brackets = fill me in; contracts aren't commands
-  ("if it doesn't start with a program, the terminal doesn't want it")
-- Redirect breaks the signature → 403 · Badge says CloudFront, Condition asks which ID ·
-  Empty string = old key not used
-- Empty bucket 403 == broken-OAC 403 — door, furniture, knock
-- Break a copy to prove the DETECTOR sees; for WIRING, find the fingerprint
-- The door says "message"; the kitchen says "detail"; the typewriter never lies
-  (unrouted paths bounce off API Gateway — FastAPI never sees them)
-- The letter weighs 5g; the envelope weighs 23 (converse wrapper overhead)
-- Freshness clause cuts ALL directions: corrected AWS docs (Haiku 4.5), corrected Code's
-  framing (/tmp), corrected the COACH (bedrock-mantle). Nobody's memory outranks live docs
+## OPEN
+- Cross-language comparability: JA input_data=1 vs EN=4 on twin prompts. Per-language gates
+  passed; comparability ungated and visibly loose. Observation, not defect — revisit with JA test set
+- Tailor (/rewrite): slipped BY PLAN — reuses judge plumbing. Next session's first build
+- Client hoisting (boto3 per-call → module level), EN lint rulebook, tier-one 表記ゆれ
+  normalization, SudachiPy 3-number measurement, envelope-vs-letter token display decision
+- PLAN.md promotion of accumulated errata
 
-## NEXT — Day 3 (slipped: /count steps ②–⑤)
-- ② POST /count route + two stubs (Code scaffolds) → YOUR HANDS write both bodies:
-  count_claude_tokens (boto3 count_tokens, converse, env JUDGE_MODEL_ID),
-  count_gpt_tokens_est (tiktoken o200k_base)
-- Check python3.12 bundled boto3 version supports count_tokens before writing stub 1
-- ③ privacy-safe error handler · ④ SAM: /count event + JUDGE_MODEL_ID + least-priv
-  bedrock:CountTokens + MemorySize 512 · ⑤ requirements + bundled encoding
-- GATE (Day 2, carried): /count returns EN+JA counts matching CountTokens truth
-- Then Day 3 proper: Judge + Tailor (original schedule pressure: watch the overrun rule)
+## LESSONS (Day 3 scars, keep)
+- 言葉は無限、文法は有限 — chase frames and connectors, never vocabulary
+- Append needs a list that's already born; Python reads the left margin like music
+- Compile at home before you ship the truck (py_compile = free; deploy = minutes)
+- The stack remembers: defaults are for birthdays. The template proposes; samconfig disposes
+- The meter and the engine take different keys
+- あれ inside 可能であれば: substring ≠ word — boundaries are earned, not free
+- A 502 that's polite, bilingual, and leak-free is the error handler WORKING — read the voice
+  of an error before assuming crash
 
-## DONE (append)
-- /count LIVE, gate GREEN: 29 EN / 47 JA — CLI, console, endpoint unanimous
-- Least-priv bedrock:CountTokens on single model ARN PROVEN live (no 403) — UNVERIFIED flag resolved
-- tiktoken o200k_base bundled + red-tested (network-blocked probe: cache works, fetch eliminated)
-- JudgeModelId Parameter deduped (!Ref both places)
-
-## FACTS (append)
-- boto3 needs ≥ 1.40.14 (2025-08-20) for count_tokens; Lambda bundled version = probe-then-pin,
-  doc no longer publishes a table
-
-## OPEN QUESTION — tomorrow's first decision
-- EN: claude_tokens 29 vs gpt_est 5 — envelope vs letter. Side-by-side is misleading as-is.
-  Options: subtract measured envelope / show as-billed both / label the difference
-
-## LESSONS (append)
-- Code stays open until the block ends (two fresh-hire briefings tonight, ~5 min each)
-- Two true numbers can still tell one lie
+## NEXT — Day 4 (per plan: Doctrine Library)
+- S3 Vectors Tokyo availability: verify LIVE first (§2a; fallback pgvector, 10-min decision)
+- Embedding shootout: Titan V2 vs Cohere on JA doctrine queries
+- KB + hierarchical chunking + language metadata + citations
+- Warm-up quiz: the four blanks (env tag / card arg / stopReason / bounds) — cold, ownership debt
+- Gate: JA user gets JA-sourced tips with working links

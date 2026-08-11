@@ -21,11 +21,18 @@ Run:  python3 scripts/trim_lexicon.py
 import json
 from pathlib import Path
 
-# scripts/ -> repo root -> data/. Resolved from __file__ so the script works
-# from any working directory, not just the repo root.
+# scripts/ -> repo root. Resolved from __file__ so the script works from any
+# working directory, not just the repo root.
+#
+# INPUT lives in data/ (the archive, never deployed). OUTPUT lives in src/data/
+# because template.yaml declares `CodeUri: src/` — only the CONTENTS of src/
+# are packaged into the Lambda zip. A sibling data/ directory is invisible to
+# the deployment, so a lexicon written there loads fine locally and dies at the
+# first cold start in Lambda. Writing it inside src/ makes the zip
+# self-contained: no env var, no build-time copy step, nothing to forget.
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data" / "ja_lints_research.json"
-DST = ROOT / "data" / "ja_lints_v1.json"
+DST = ROOT / "src" / "data" / "ja_lints_v1.json"
 
 # The only entry-level fields the matcher can use. Everything else —
 # note, sources, disagreement — is provenance and stays in the archive.
@@ -193,6 +200,8 @@ def build() -> dict:
 
 def main() -> None:
     built, report = build()
+
+    DST.parent.mkdir(parents=True, exist_ok=True)
 
     # ensure_ascii=False: the whole file is Japanese. Escaped \uXXXX would
     # quadruple the size and make it unreadable in review.

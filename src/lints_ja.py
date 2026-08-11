@@ -58,19 +58,16 @@ from pathlib import Path
 
 # --- Loading ---------------------------------------------------------------
 #
-# Path via env var, matching how JUDGE_MODEL_ID and TIKTOKEN_CACHE_DIR already
-# work in this project: the code reads a variable, the template declares its
-# value. The default resolves to the repo layout so this module is importable
-# and testable right now, before any packaging decision is made.
+# PACKAGING (resolved 2026-08-12). scripts/trim_lexicon.py writes its output to
+# src/data/ja_lints_v1.json — a SIBLING of this file, not of src/. That matters
+# because template.yaml declares `CodeUri: src/`: the contents of src/ land at
+# /var/task, so this path resolves identically in the repo and in Lambda. The
+# zip is self-contained; there is no copy step to forget.
 #
-# TODO(day 4) — PACKAGING. template.yaml has `CodeUri: src/`, so the CONTENTS
-# of src/ land at /var/task and data/ (a sibling of src/) is NOT in the zip.
-# Two ways out, both one line: set JA_LEXICON_PATH in the template and copy
-# data/ja_lints_v1.json into the build, or move the build script's output into
-# src/. Deferred deliberately — today's task wires nothing into routes.
-_DEFAULT_LEXICON_PATH = (
-    Path(__file__).resolve().parent.parent / "data" / "ja_lints_v1.json"
-)
+# The env var stays as an override, matching how JUDGE_MODEL_ID and
+# TIKTOKEN_CACHE_DIR already work — useful for tests that want a fixture
+# lexicon, never needed in normal operation.
+_DEFAULT_LEXICON_PATH = Path(__file__).resolve().parent / "data" / "ja_lints_v1.json"
 LEXICON_PATH = Path(os.environ.get("JA_LEXICON_PATH", _DEFAULT_LEXICON_PATH))
 
 PRODUCTIVE_VAGUE = re.compile(r"(な|した|っぽい|てる|ている|ある)(感じ|具合)(で|に)")
