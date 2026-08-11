@@ -18,7 +18,82 @@ Resources:
             Properties:
               Path: /hello
               Method: get
+  # --- Day 2 warm-up: the face. Private bucket, CloudFront the only door. ---
+
+  # No BucketName: CloudFormation names it, so it cannot collide globally.
+  # No WebsiteConfiguration: website hosting would make this a custom origin
+  # and OAC would stop working.
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # Origin Access Control. SigningBehavior "always" is what forces every
+  # CloudFront-to-S3 request to carry a SigV4 signature.
+  SiteOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-site-oac"
+        Description: Signs CloudFront requests to the Haruka site bucket
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  SiteDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: Haruka static site
+        DefaultRootObject: index.html
+        Origins:
+          - Id: SiteS3Origin
+            # RegionalDomainName, not DomainName: the non-regional form
+            # triggers a 307 redirect that breaks the signature.
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            # Sibling of S3OriginConfig, not nested inside it.
+            OriginAccessControlId: !GetAtt SiteOAC.Id
+            # Empty string is required by CloudFront when using OAC.
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: SiteS3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          # AWS managed policy: CachingOptimized
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+
+  # The Condition is the security control: without it, ANY CloudFront
+  # distribution in ANY AWS account could read this bucket.
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipalReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}"
+
 Outputs:
   ApiUrl:
     Description: Where Haruka answers
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/hello"
+  SiteDomainName:
+    Description: CloudFront domain for the Haruka page (prefix with https://)
+    Value: !GetAtt SiteDistribution.DomainName
