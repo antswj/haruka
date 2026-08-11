@@ -11,7 +11,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
         CodeUri: src/
-        Handler: app.lambda_handler
+        # Mangum instance exported by src/app.py, not a raw Lambda function.
+        Handler: app.handler
         Events:
           HelloApi:
             Type: HttpApi

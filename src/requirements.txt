@@ -1,0 +1,7 @@
+# Plain `fastapi`, not `fastapi[standard]`: the extra pulls uvicorn, httpx,
+# typer and friends, which a Lambda behind API Gateway never runs. Plain
+# fastapi is just starlette + pydantic.
+# Pinned exactly — Lambda builds should be reproducible, and FastAPI ships
+# several releases some weeks.
+fastapi==0.141.1
+mangum==0.21.0
