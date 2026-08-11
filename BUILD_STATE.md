@@ -51,3 +51,21 @@ Date: 2026-08-11 · Day 2 (end)
   bedrock:CountTokens + MemorySize 512 · ⑤ requirements + bundled encoding
 - GATE (Day 2, carried): /count returns EN+JA counts matching CountTokens truth
 - Then Day 3 proper: Judge + Tailor (original schedule pressure: watch the overrun rule)
+
+## DONE (append)
+- /count LIVE, gate GREEN: 29 EN / 47 JA — CLI, console, endpoint unanimous
+- Least-priv bedrock:CountTokens on single model ARN PROVEN live (no 403) — UNVERIFIED flag resolved
+- tiktoken o200k_base bundled + red-tested (network-blocked probe: cache works, fetch eliminated)
+- JudgeModelId Parameter deduped (!Ref both places)
+
+## FACTS (append)
+- boto3 needs ≥ 1.40.14 (2025-08-20) for count_tokens; Lambda bundled version = probe-then-pin,
+  doc no longer publishes a table
+
+## OPEN QUESTION — tomorrow's first decision
+- EN: claude_tokens 29 vs gpt_est 5 — envelope vs letter. Side-by-side is misleading as-is.
+  Options: subtract measured envelope / show as-billed both / label the difference
+
+## LESSONS (append)
+- Code stays open until the block ends (two fresh-hire briefings tonight, ~5 min each)
+- Two true numbers can still tell one lie

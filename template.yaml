@@ -1,10 +1,34 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Haruka - prompt analysis tool (Day 1 skeleton)
+
+Parameters:
+  # The judge model id lives in exactly ONE place. It is needed twice — the
+  # Lambda reads it at runtime, and IAM names it in the resource ARN — and
+  # two literals are two things that can drift apart. A parameter makes the
+  # second one a reference to the first, so a model swap is a one-line edit
+  # that cannot leave the permission pointing at the old model.
+  #
+  # Quoted because the id ends in ":0". Bare YAML would still parse it (a
+  # colon only splits a key when a SPACE follows it), but this string gets
+  # copy-pasted a lot and one stray space would silently turn it into a
+  # nested map. Quotes remove the question.
+  JudgeModelId:
+    Type: String
+    Default: "anthropic.claude-haiku-4-5-20251001-v1:0"
+    Description: >-
+      Bedrock model id used for token counting and (from Day 3) judging.
+      Verified live Day 2: this id supports CountTokens on bedrock-runtime
+      in Tokyo (29 EN / 47 JA).
+
 Globals:
   Function:
     Timeout: 10
-    MemorySize: 128
+    # 512, not 128: on Lambda, memory is the CPU dial — you cannot buy cores
+    # directly. More CPU means the cold-start import of fastapi/pydantic-core
+    # finishes sooner, so the slowest request gets faster even though the
+    # function never needs 512 MB of actual memory.
+    MemorySize: 512
     Runtime: python3.12
 Resources:
   HelloFunction:
@@ -13,12 +37,61 @@ Resources:
         CodeUri: src/
         # Mangum instance exported by src/app.py, not a raw Lambda function.
         Handler: app.handler
+        Environment:
+          Variables:
+            # Decision 6: zero hardcoded model names in code. The code reads
+            # this variable; the template declares its value — so changing
+            # judge models is a template change, not a code change.
+            JUDGE_MODEL_ID: !Ref JudgeModelId
+            # Without this, tiktoken's first get_encoding() downloads the
+            # o200k_base vocabulary from openaipublic.blob.core.windows.net —
+            # on every cold start, from inside a Lambda that has no reason to
+            # hold outbound internet access. We ship the encoding in the zip
+            # (src/tiktoken_cache/) and point tiktoken at it here.
+            #
+            # /var/task is where Lambda unpacks the deployment package, and
+            # CodeUri is src/, so the CONTENTS of src/ land at /var/task —
+            # src/tiktoken_cache/ becomes /var/task/tiktoken_cache.
+            TIKTOKEN_CACHE_DIR: /var/task/tiktoken_cache
+        Policies:
+          # Same policy language version the bucket policy declares. Omitting
+          # it defaults to 2008-10-17, which behaves identically for a plain
+          # Allow but quietly drops policy-variable support if a Condition
+          # ever lands here.
+          - Version: "2012-10-17"
+            Statement:
+              # Least privilege, said precisely: ONE action, on ONE model.
+              # Not bedrock:* (which would include InvokeModel — the ability
+              # to spend money), and not Resource: "*" (which would be every
+              # model in the account). This function only ever asks "how
+              # long is this?", so that is the only verb it holds.
+              # Note the ARN has two colons before foundation-model: token
+              # counting is an account-less service resource.
+              #
+              # !Sub, not a literal: the model id is interpolated from the
+              # JudgeModelId parameter, so the permission follows the env
+              # var automatically. The REGION stays hardcoded on purpose —
+              # Tokyo is locked for all of v1 (§7), and ${AWS::Region} would
+              # quietly let a deploy elsewhere succeed.
+              - Sid: CountTokensOnJudgeModelOnly
+                Effect: Allow
+                Action: bedrock:CountTokens
+                Resource: !Sub "arn:aws:bedrock:ap-northeast-1::foundation-model/${JudgeModelId}"
         Events:
           HelloApi:
             Type: HttpApi
             Properties:
               Path: /hello
               Method: get
+          CountApi:
+            Type: HttpApi
+            Properties:
+              Path: /count
+              # post, not get: the prompt travels in the body. A prompt in a
+              # query string would land in API Gateway access logs and in
+              # browser history — the privacy claim would be false before
+              # the code ever ran.
+              Method: post
   # --- Day 2 warm-up: the face. Private bucket, CloudFront the only door. ---
 
   # No BucketName: CloudFormation names it, so it cannot collide globally.
